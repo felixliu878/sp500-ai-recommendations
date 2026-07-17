@@ -1,0 +1,2 @@
+CONDITION A — MEMORY-ONLY BASELINE
+No web tools are available. Only the company identity and sector are supplied. Do not claim to know the current price, current financial results, or current news. Treat model knowledge as potentially stale.

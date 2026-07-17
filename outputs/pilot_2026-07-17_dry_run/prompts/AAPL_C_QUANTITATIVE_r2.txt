@@ -1,0 +1,239 @@
+You are participating in a controlled academic study of AI-generated stock classifications. This is not personalized financial advice.
+
+Evaluate Apple Inc. (AAPL) as of 2026-07-17 over a 12-month horizon relative to the expected risk-adjusted total return of the S&P 500, represented by SPY.
+
+Select exactly one classification: STRONG_BUY, BUY, HOLD, SELL, or STRONG_SELL.
+
+Use only the information and tools permitted in this experimental condition. Do not invent missing prices, events, financial results, analyst opinions, or dates. Do not use information published after the as-of date. If evidence is insufficient, select the closest classification, lower confidence, and state the limitation.
+
+Rating interpretation:
+- STRONG_BUY: clearly favorable expected risk-adjusted performance relative to SPY.
+- BUY: moderately favorable expected risk-adjusted performance relative to SPY.
+- HOLD: roughly in line with SPY or too uncertain to take a directional position.
+- SELL: moderately unfavorable expected risk-adjusted performance relative to SPY.
+- STRONG_SELL: clearly unfavorable expected risk-adjusted performance relative to SPY.
+
+The response must follow the supplied JSON schema. Use three concise thesis points and three concise risks. Assign standardized reason codes. Disclose whether analyst opinions were encountered and whether they influenced the rating.
+
+CONDITION C — QUANTITATIVE PACKET, NO WEB
+No web tools are available. Use only the supplied price, technical, fundamental, benchmark, and sector information. Analyst recommendations are intentionally excluded. Do not rely on model memory for facts after the stated data cutoff.
+
+COMPANY IDENTITY
+{
+  "as_of_date": "2026-07-17",
+  "company": "Apple Inc.",
+  "horizon_months": 12,
+  "prompt_version": "v1.0.0",
+  "sector": "Information Technology",
+  "symbol": "AAPL"
+}
+
+CONDITION DATA PACKET
+{
+  "fundamentals": {
+    "status": "not available in no-key prototype"
+  },
+  "price_history_monthly": [
+    {
+      "adjusted_close": 227.296143,
+      "month_end": "2024-08-31",
+      "monthly_volume": 1122667000
+    },
+    {
+      "adjusted_close": 231.266357,
+      "month_end": "2024-09-30",
+      "monthly_volume": 1232097700
+    },
+    {
+      "adjusted_close": 224.229111,
+      "month_end": "2024-10-31",
+      "monthly_volume": 930736000
+    },
+    {
+      "adjusted_close": 235.823334,
+      "month_end": "2024-11-30",
+      "monthly_volume": 891588300
+    },
+    {
+      "adjusted_close": 248.830215,
+      "month_end": "2024-12-31",
+      "monthly_volume": 977916100
+    },
+    {
+      "adjusted_close": 234.50177,
+      "month_end": "2025-01-31",
+      "monthly_volume": 1200176400
+    },
+    {
+      "adjusted_close": 240.568893,
+      "month_end": "2025-02-28",
+      "monthly_volume": 862272300
+    },
+    {
+      "adjusted_close": 220.962494,
+      "month_end": "2025-03-31",
+      "monthly_volume": 1115239500
+    },
+    {
+      "adjusted_close": 211.383102,
+      "month_end": "2025-04-30",
+      "monthly_volume": 1607318600
+    },
+    {
+      "adjusted_close": 200.056335,
+      "month_end": "2025-05-31",
+      "monthly_volume": 1195728200
+    },
+    {
+      "adjusted_close": 204.359253,
+      "month_end": "2025-06-30",
+      "monthly_volume": 1100409300
+    },
+    {
+      "adjusted_close": 206.749786,
+      "month_end": "2025-07-31",
+      "monthly_volume": 1079935600
+    },
+    {
+      "adjusted_close": 231.485107,
+      "month_end": "2025-08-31",
+      "monthly_volume": 1218079100
+    },
+    {
+      "adjusted_close": 253.911667,
+      "month_end": "2025-09-30",
+      "monthly_volume": 1265536400
+    },
+    {
+      "adjusted_close": 269.607239,
+      "month_end": "2025-10-31",
+      "monthly_volume": 1097142200
+    },
+    {
+      "adjusted_close": 278.332886,
+      "month_end": "2025-11-30",
+      "monthly_volume": 877578200
+    },
+    {
+      "adjusted_close": 271.355835,
+      "month_end": "2025-12-31",
+      "monthly_volume": 924528800
+    },
+    {
+      "adjusted_close": 258.99884,
+      "month_end": "2026-01-31",
+      "monthly_volume": 1040017300
+    },
+    {
+      "adjusted_close": 263.936829,
+      "month_end": "2026-02-28",
+      "monthly_volume": 988921000
+    },
+    {
+      "adjusted_close": 253.556381,
+      "month_end": "2026-03-31",
+      "monthly_volume": 900035700
+    },
+    {
+      "adjusted_close": 271.10025,
+      "month_end": "2026-04-30",
+      "monthly_volume": 907538500
+    },
+    {
+      "adjusted_close": 312.059998,
+      "month_end": "2026-05-31",
+      "monthly_volume": 981286400
+    },
+    {
+      "adjusted_close": 289.359985,
+      "month_end": "2026-06-30",
+      "monthly_volume": 1401170100
+    },
+    {
+      "adjusted_close": 332.809998,
+      "month_end": "2026-07-31",
+      "monthly_volume": 568895920
+    }
+  ],
+  "sector_context": {
+    "beta_vs_spy_1y": 1.686316,
+    "data_end": "2026-07-17",
+    "data_start": "2024-07-17",
+    "distance_from_sma20": -0.050239,
+    "distance_from_sma200": 0.136526,
+    "distance_from_sma50": -0.045535,
+    "latest_adjusted_close": 174.380005,
+    "macd": -0.910546,
+    "macd_signal": 0.325393,
+    "maximum_drawdown_52w": -0.159227,
+    "observations": 502,
+    "position_in_52w_range": 0.66593,
+    "relative_return_vs_sector_12m": null,
+    "relative_return_vs_spy_12m": 0.149315,
+    "return_12m": 0.355148,
+    "return_1m": -0.06357,
+    "return_3m": 0.148454,
+    "return_6m": 0.208051,
+    "rsi14": 41.32115,
+    "sma20": 183.604101,
+    "sma200": 153.432499,
+    "sma50": 182.699165,
+    "volatility_20d_annualized": 0.342406,
+    "volatility_60d_annualized": 0.339384,
+    "volume_zscore_20d": -2.235569
+  },
+  "spy_market_context": {
+    "beta_vs_spy_1y": null,
+    "data_end": "2026-07-17",
+    "data_start": "2024-07-17",
+    "distance_from_sma20": -0.000836,
+    "distance_from_sma200": 0.073561,
+    "distance_from_sma50": 0.001614,
+    "latest_adjusted_close": 744.456299,
+    "macd": 3.194808,
+    "macd_signal": 3.327442,
+    "maximum_drawdown_52w": -0.08885,
+    "observations": 502,
+    "position_in_52w_range": 0.907773,
+    "relative_return_vs_sector_12m": null,
+    "relative_return_vs_spy_12m": null,
+    "return_12m": 0.205833,
+    "return_1m": -0.005272,
+    "return_3m": 0.063726,
+    "return_6m": 0.08409,
+    "rsi14": 49.624528,
+    "sma20": 745.079321,
+    "sma200": 693.445863,
+    "sma50": 743.256725,
+    "volatility_20d_annualized": 0.120813,
+    "volatility_60d_annualized": 0.131034,
+    "volume_zscore_20d": -2.397091
+  },
+  "technical_and_return_features": {
+    "beta_vs_spy_1y": 0.843736,
+    "data_end": "2026-07-17",
+    "data_start": "2024-07-17",
+    "distance_from_sma20": 0.089496,
+    "distance_from_sma200": 0.215186,
+    "distance_from_sma50": 0.099785,
+    "latest_adjusted_close": 332.809998,
+    "macd": 8.747941,
+    "macd_signal": 5.473076,
+    "maximum_drawdown_52w": -0.137985,
+    "observations": 502,
+    "position_in_52w_range": 0.996583,
+    "relative_return_vs_sector_12m": 0.234737,
+    "relative_return_vs_spy_12m": 0.384052,
+    "return_12m": 0.589885,
+    "return_1m": 0.112184,
+    "return_3m": 0.26468,
+    "return_6m": 0.282614,
+    "rsi14": 70.932825,
+    "sma20": 305.4715,
+    "sma200": 273.875798,
+    "sma50": 302.613816,
+    "volatility_20d_annualized": 0.36348,
+    "volatility_60d_annualized": 0.280555,
+    "volume_zscore_20d": -0.917676
+  }
+}

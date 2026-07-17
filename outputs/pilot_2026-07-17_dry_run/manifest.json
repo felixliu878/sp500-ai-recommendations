@@ -1,0 +1,38 @@
+{
+  "analyst_provider": null,
+  "as_of_date": "2026-07-17",
+  "backend": "dry-run",
+  "backend_disclaimer": "DRY_RUN_NOT_AI: deterministic routing validation only; no AI or web-search recommendation was produced.",
+  "conditions": [
+    "A_MEMORY_ONLY",
+    "B_PRICE_HISTORY",
+    "C_QUANTITATIVE",
+    "D_CURRENT_WEB"
+  ],
+  "created_at_utc": "2026-07-17T15:15:42.919803+00:00",
+  "experiment_name": "sp500_ai_information_ablation",
+  "key_status": {
+    "FMP_API_KEY": false,
+    "OPENAI_API_KEY": false
+  },
+  "model": null,
+  "planned_or_completed_assessments": 72,
+  "price_provider": "Yahoo chart prototype (unofficial)",
+  "repetitions": 3,
+  "scope": "pilot",
+  "symbols": [
+    "MU",
+    "AAPL",
+    "JPM",
+    "JNJ",
+    "NEE",
+    "KO"
+  ],
+  "universe_snapshot": {
+    "as_of_label": "As of 16-Jul-2026",
+    "provider": "State Street SPY daily holdings",
+    "retrieved_at_utc": "2026-07-17T15:15:42.829630+00:00",
+    "security_count": 504,
+    "source_url": "https://www.ssga.com/library-content/products/fund-data/etfs/us/holdings-daily-us-en-spy.xlsx"
+  }
+}

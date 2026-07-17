@@ -1,0 +1,63 @@
+{
+  "chartPreviousClose": 71.9,
+  "currency": "USD",
+  "currentTradingPeriod": {
+    "post": {
+      "end": 1784332800,
+      "gmtoffset": -14400,
+      "start": 1784318400,
+      "timezone": "EDT"
+    },
+    "pre": {
+      "end": 1784295000,
+      "gmtoffset": -14400,
+      "start": 1784275200,
+      "timezone": "EDT"
+    },
+    "regular": {
+      "end": 1784318400,
+      "gmtoffset": -14400,
+      "start": 1784295000,
+      "timezone": "EDT"
+    }
+  },
+  "dataGranularity": "1d",
+  "exchangeName": "NYQ",
+  "exchangeTimezoneName": "America/New_York",
+  "fiftyTwoWeekHigh": 98.75,
+  "fiftyTwoWeekLow": 69.24,
+  "firstTradeDate": 99153000,
+  "fullExchangeName": "NYSE",
+  "gmtoffset": -14400,
+  "hasPrePostMarketData": true,
+  "instrumentType": "EQUITY",
+  "longName": "NextEra Energy, Inc.",
+  "priceHint": 2,
+  "provider_symbol": "NEE",
+  "range": "",
+  "regularMarketDayHigh": 90.715,
+  "regularMarketDayLow": 89.65,
+  "regularMarketPrice": 90.02,
+  "regularMarketTime": 1784300503,
+  "regularMarketVolume": 2000872,
+  "requested_symbol": "NEE",
+  "research_status": "PROTOTYPE_UNOFFICIAL_NO_KEY_SOURCE",
+  "retrieved_at_utc": "2026-07-17T15:01:47.883889+00:00",
+  "shortName": "NextEra Energy, Inc.",
+  "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/NEE",
+  "symbol": "NEE",
+  "timezone": "EDT",
+  "validRanges": [
+    "1d",
+    "5d",
+    "1mo",
+    "3mo",
+    "6mo",
+    "1y",
+    "2y",
+    "5y",
+    "10y",
+    "ytd",
+    "max"
+  ]
+}

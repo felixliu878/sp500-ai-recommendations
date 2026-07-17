@@ -1,0 +1,63 @@
+{
+  "chartPreviousClose": 127.49,
+  "currency": "USD",
+  "currentTradingPeriod": {
+    "post": {
+      "end": 1784332800,
+      "gmtoffset": -14400,
+      "start": 1784318400,
+      "timezone": "EDT"
+    },
+    "pre": {
+      "end": 1784295000,
+      "gmtoffset": -14400,
+      "start": 1784275200,
+      "timezone": "EDT"
+    },
+    "regular": {
+      "end": 1784318400,
+      "gmtoffset": -14400,
+      "start": 1784295000,
+      "timezone": "EDT"
+    }
+  },
+  "dataGranularity": "1d",
+  "exchangeName": "NMS",
+  "exchangeTimezoneName": "America/New_York",
+  "fiftyTwoWeekHigh": 1255.0,
+  "fiftyTwoWeekLow": 103.38,
+  "firstTradeDate": 454944600,
+  "fullExchangeName": "NasdaqGS",
+  "gmtoffset": -14400,
+  "hasPrePostMarketData": true,
+  "instrumentType": "EQUITY",
+  "longName": "Micron Technology, Inc.",
+  "priceHint": 2,
+  "provider_symbol": "MU",
+  "range": "",
+  "regularMarketDayHigh": 880.586,
+  "regularMarketDayLow": 804.0,
+  "regularMarketPrice": 850.295,
+  "regularMarketTime": 1784300505,
+  "regularMarketVolume": 26078331,
+  "requested_symbol": "MU",
+  "research_status": "PROTOTYPE_UNOFFICIAL_NO_KEY_SOURCE",
+  "retrieved_at_utc": "2026-07-17T15:01:46.796096+00:00",
+  "shortName": "Micron Technology, Inc.",
+  "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/MU",
+  "symbol": "MU",
+  "timezone": "EDT",
+  "validRanges": [
+    "1d",
+    "5d",
+    "1mo",
+    "3mo",
+    "6mo",
+    "1y",
+    "2y",
+    "5y",
+    "10y",
+    "ytd",
+    "max"
+  ]
+}

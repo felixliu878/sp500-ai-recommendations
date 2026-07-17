@@ -1,0 +1,63 @@
+{
+  "chartPreviousClose": 213.62,
+  "currency": "USD",
+  "currentTradingPeriod": {
+    "post": {
+      "end": 1784332800,
+      "gmtoffset": -14400,
+      "start": 1784318400,
+      "timezone": "EDT"
+    },
+    "pre": {
+      "end": 1784295000,
+      "gmtoffset": -14400,
+      "start": 1784275200,
+      "timezone": "EDT"
+    },
+    "regular": {
+      "end": 1784318400,
+      "gmtoffset": -14400,
+      "start": 1784295000,
+      "timezone": "EDT"
+    }
+  },
+  "dataGranularity": "1d",
+  "exchangeName": "NYQ",
+  "exchangeTimezoneName": "America/New_York",
+  "fiftyTwoWeekHigh": 351.24,
+  "fiftyTwoWeekLow": 279.1,
+  "firstTradeDate": 322151400,
+  "fullExchangeName": "NYSE",
+  "gmtoffset": -14400,
+  "hasPrePostMarketData": true,
+  "instrumentType": "EQUITY",
+  "longName": "JPMorgan Chase & Co.",
+  "priceHint": 2,
+  "provider_symbol": "JPM",
+  "range": "",
+  "regularMarketDayHigh": 346.125,
+  "regularMarketDayLow": 335.05,
+  "regularMarketPrice": 345.535,
+  "regularMarketTime": 1784300493,
+  "regularMarketVolume": 3158413,
+  "requested_symbol": "JPM",
+  "research_status": "PROTOTYPE_UNOFFICIAL_NO_KEY_SOURCE",
+  "retrieved_at_utc": "2026-07-17T15:01:47.331076+00:00",
+  "shortName": "JP Morgan Chase & Co.",
+  "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/JPM",
+  "symbol": "JPM",
+  "timezone": "EDT",
+  "validRanges": [
+    "1d",
+    "5d",
+    "1mo",
+    "3mo",
+    "6mo",
+    "1y",
+    "2y",
+    "5y",
+    "10y",
+    "ytd",
+    "max"
+  ]
+}

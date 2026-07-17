@@ -1,0 +1,155 @@
+You are participating in a controlled academic study of AI-generated stock classifications. This is not personalized financial advice.
+
+Evaluate Micron Technology Inc. (MU) as of 2026-07-17 over a 12-month horizon relative to the expected risk-adjusted total return of the S&P 500, represented by SPY.
+
+Select exactly one classification: STRONG_BUY, BUY, HOLD, SELL, or STRONG_SELL.
+
+Use only the information and tools permitted in this experimental condition. Do not invent missing prices, events, financial results, analyst opinions, or dates. Do not use information published after the as-of date. If evidence is insufficient, select the closest classification, lower confidence, and state the limitation.
+
+Rating interpretation:
+- STRONG_BUY: clearly favorable expected risk-adjusted performance relative to SPY.
+- BUY: moderately favorable expected risk-adjusted performance relative to SPY.
+- HOLD: roughly in line with SPY or too uncertain to take a directional position.
+- SELL: moderately unfavorable expected risk-adjusted performance relative to SPY.
+- STRONG_SELL: clearly unfavorable expected risk-adjusted performance relative to SPY.
+
+The response must follow the supplied JSON schema. Use three concise thesis points and three concise risks. Assign standardized reason codes. Disclose whether analyst opinions were encountered and whether they influenced the rating.
+
+CONDITION B — EXPLICIT PRICE HISTORY, NO WEB
+No web tools are available. Use only the supplied dated price-history packet. Analyst recommendations, company news, and fundamentals are intentionally excluded. Do not rely on model memory for facts after the stated data cutoff.
+
+COMPANY IDENTITY
+{
+  "as_of_date": "2026-07-17",
+  "company": "Micron Technology Inc.",
+  "horizon_months": 12,
+  "prompt_version": "v1.0.0",
+  "sector": "Information Technology",
+  "symbol": "MU"
+}
+
+CONDITION DATA PACKET
+{
+  "price_history_monthly": [
+    {
+      "adjusted_close": 95.638519,
+      "month_end": "2024-08-31",
+      "monthly_volume": 515680800
+    },
+    {
+      "adjusted_close": 103.061829,
+      "month_end": "2024-09-30",
+      "monthly_volume": 603284300
+    },
+    {
+      "adjusted_close": 99.138702,
+      "month_end": "2024-10-31",
+      "monthly_volume": 443630700
+    },
+    {
+      "adjusted_close": 97.447426,
+      "month_end": "2024-11-30",
+      "monthly_volume": 322870300
+    },
+    {
+      "adjusted_close": 83.836967,
+      "month_end": "2024-12-31",
+      "monthly_volume": 574561300
+    },
+    {
+      "adjusted_close": 90.889786,
+      "month_end": "2025-01-31",
+      "monthly_volume": 530661800
+    },
+    {
+      "adjusted_close": 93.270615,
+      "month_end": "2025-02-28",
+      "monthly_volume": 349149400
+    },
+    {
+      "adjusted_close": 86.669182,
+      "month_end": "2025-03-31",
+      "monthly_volume": 489816600
+    },
+    {
+      "adjusted_close": 76.754448,
+      "month_end": "2025-04-30",
+      "monthly_volume": 620142100
+    },
+    {
+      "adjusted_close": 94.219948,
+      "month_end": "2025-05-31",
+      "monthly_volume": 374814000
+    },
+    {
+      "adjusted_close": 122.936775,
+      "month_end": "2025-06-30",
+      "monthly_volume": 506275700
+    },
+    {
+      "adjusted_close": 108.965103,
+      "month_end": "2025-07-31",
+      "monthly_volume": 485942300
+    },
+    {
+      "adjusted_close": 118.819298,
+      "month_end": "2025-08-31",
+      "monthly_volume": 378664400
+    },
+    {
+      "adjusted_close": 167.051865,
+      "month_end": "2025-09-30",
+      "monthly_volume": 576098500
+    },
+    {
+      "adjusted_close": 223.551331,
+      "month_end": "2025-10-31",
+      "monthly_volume": 551239000
+    },
+    {
+      "adjusted_close": 236.248901,
+      "month_end": "2025-11-30",
+      "monthly_volume": 537127400
+    },
+    {
+      "adjusted_close": 285.246277,
+      "month_end": "2025-12-31",
+      "monthly_volume": 579404500
+    },
+    {
+      "adjusted_close": 414.641998,
+      "month_end": "2026-01-31",
+      "monthly_volume": 749894600
+    },
+    {
+      "adjusted_close": 412.133453,
+      "month_end": "2026-02-28",
+      "monthly_volume": 671671800
+    },
+    {
+      "adjusted_close": 337.788055,
+      "month_end": "2026-03-31",
+      "monthly_volume": 1023284500
+    },
+    {
+      "adjusted_close": 517.080444,
+      "month_end": "2026-04-30",
+      "monthly_volume": 871436500
+    },
+    {
+      "adjusted_close": 970.850708,
+      "month_end": "2026-05-31",
+      "monthly_volume": 1117340200
+    },
+    {
+      "adjusted_close": 1154.112549,
+      "month_end": "2026-06-30",
+      "monthly_volume": 1205064300
+    },
+    {
+      "adjusted_close": 850.294983,
+      "month_end": "2026-07-31",
+      "monthly_volume": 511172531
+    }
+  ]
+}

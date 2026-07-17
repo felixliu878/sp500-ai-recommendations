@@ -1,0 +1,34 @@
+You are participating in a controlled academic study of AI-generated stock classifications. This is not personalized financial advice.
+
+Evaluate The Coca-Cola Company (KO) as of 2026-07-17 over a 12-month horizon relative to the expected risk-adjusted total return of the S&P 500, represented by SPY.
+
+Select exactly one classification: STRONG_BUY, BUY, HOLD, SELL, or STRONG_SELL.
+
+Use only the information and tools permitted in this experimental condition. Do not invent missing prices, events, financial results, analyst opinions, or dates. Do not use information published after the as-of date. If evidence is insufficient, select the closest classification, lower confidence, and state the limitation.
+
+Rating interpretation:
+- STRONG_BUY: clearly favorable expected risk-adjusted performance relative to SPY.
+- BUY: moderately favorable expected risk-adjusted performance relative to SPY.
+- HOLD: roughly in line with SPY or too uncertain to take a directional position.
+- SELL: moderately unfavorable expected risk-adjusted performance relative to SPY.
+- STRONG_SELL: clearly unfavorable expected risk-adjusted performance relative to SPY.
+
+The response must follow the supplied JSON schema. Use three concise thesis points and three concise risks. Assign standardized reason codes. Disclose whether analyst opinions were encountered and whether they influenced the rating.
+
+CONDITION A — MEMORY-ONLY BASELINE
+No web tools are available. Only the company identity and sector are supplied. Do not claim to know the current price, current financial results, or current news. Treat model knowledge as potentially stale.
+
+COMPANY IDENTITY
+{
+  "as_of_date": "2026-07-17",
+  "company": "The Coca-Cola Company",
+  "horizon_months": 12,
+  "prompt_version": "v1.0.0",
+  "sector": "Consumer Staples",
+  "symbol": "KO"
+}
+
+CONDITION DATA PACKET
+{
+  "supplied_information": "company identity only"
+}

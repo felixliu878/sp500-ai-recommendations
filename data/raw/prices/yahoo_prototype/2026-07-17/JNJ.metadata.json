@@ -1,0 +1,63 @@
+{
+  "chartPreviousClose": 151.01,
+  "currency": "USD",
+  "currentTradingPeriod": {
+    "post": {
+      "end": 1784332800,
+      "gmtoffset": -14400,
+      "start": 1784318400,
+      "timezone": "EDT"
+    },
+    "pre": {
+      "end": 1784295000,
+      "gmtoffset": -14400,
+      "start": 1784275200,
+      "timezone": "EDT"
+    },
+    "regular": {
+      "end": 1784318400,
+      "gmtoffset": -14400,
+      "start": 1784295000,
+      "timezone": "EDT"
+    }
+  },
+  "dataGranularity": "1d",
+  "exchangeName": "NYQ",
+  "exchangeTimezoneName": "America/New_York",
+  "fiftyTwoWeekHigh": 269.43,
+  "fiftyTwoWeekLow": 162.78,
+  "firstTradeDate": -252322200,
+  "fullExchangeName": "NYSE",
+  "gmtoffset": -14400,
+  "hasPrePostMarketData": true,
+  "instrumentType": "EQUITY",
+  "longName": "Johnson & Johnson",
+  "priceHint": 2,
+  "provider_symbol": "JNJ",
+  "range": "",
+  "regularMarketDayHigh": 255.66,
+  "regularMarketDayLow": 252.35,
+  "regularMarketPrice": 254.7,
+  "regularMarketTime": 1784300504,
+  "regularMarketVolume": 2808220,
+  "requested_symbol": "JNJ",
+  "research_status": "PROTOTYPE_UNOFFICIAL_NO_KEY_SOURCE",
+  "retrieved_at_utc": "2026-07-17T15:01:47.619617+00:00",
+  "shortName": "Johnson & Johnson",
+  "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/JNJ",
+  "symbol": "JNJ",
+  "timezone": "EDT",
+  "validRanges": [
+    "1d",
+    "5d",
+    "1mo",
+    "3mo",
+    "6mo",
+    "1y",
+    "2y",
+    "5y",
+    "10y",
+    "ytd",
+    "max"
+  ]
+}

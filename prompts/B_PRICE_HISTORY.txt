@@ -1,0 +1,2 @@
+CONDITION B — EXPLICIT PRICE HISTORY, NO WEB
+No web tools are available. Use only the supplied dated price-history packet. Analyst recommendations, company news, and fundamentals are intentionally excluded. Do not rely on model memory for facts after the stated data cutoff.

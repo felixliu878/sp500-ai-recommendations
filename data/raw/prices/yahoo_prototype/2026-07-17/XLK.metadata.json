@@ -1,0 +1,63 @@
+{
+  "chartPreviousClose": 116.72,
+  "currency": "USD",
+  "currentTradingPeriod": {
+    "post": {
+      "end": 1784332800,
+      "gmtoffset": -14400,
+      "start": 1784318400,
+      "timezone": "EDT"
+    },
+    "pre": {
+      "end": 1784295000,
+      "gmtoffset": -14400,
+      "start": 1784275200,
+      "timezone": "EDT"
+    },
+    "regular": {
+      "end": 1784318400,
+      "gmtoffset": -14400,
+      "start": 1784295000,
+      "timezone": "EDT"
+    }
+  },
+  "dataGranularity": "1d",
+  "exchangeName": "PCX",
+  "exchangeTimezoneName": "America/New_York",
+  "fiftyTwoWeekHigh": 198.73,
+  "fiftyTwoWeekLow": 126.68,
+  "firstTradeDate": 914337000,
+  "fullExchangeName": "NYSEArca",
+  "gmtoffset": -14400,
+  "hasPrePostMarketData": true,
+  "instrumentType": "ETF",
+  "longName": "State Street Technology Select Sector SPDR ETF",
+  "priceHint": 2,
+  "provider_symbol": "XLK",
+  "range": "",
+  "regularMarketDayHigh": 176.09,
+  "regularMarketDayLow": 171.35,
+  "regularMarketPrice": 174.38,
+  "regularMarketTime": 1784300502,
+  "regularMarketVolume": 4154168,
+  "requested_symbol": "XLK",
+  "research_status": "PROTOTYPE_UNOFFICIAL_NO_KEY_SOURCE",
+  "retrieved_at_utc": "2026-07-17T15:01:45.974280+00:00",
+  "shortName": "State Street Technology Select ",
+  "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLK",
+  "symbol": "XLK",
+  "timezone": "EDT",
+  "validRanges": [
+    "1d",
+    "5d",
+    "1mo",
+    "3mo",
+    "6mo",
+    "1y",
+    "2y",
+    "5y",
+    "10y",
+    "ytd",
+    "max"
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "chartPreviousClose": 234.82,
+  "currency": "USD",
+  "currentTradingPeriod": {
+    "post": {
+      "end": 1784332800,
+      "gmtoffset": -14400,
+      "start": 1784318400,
+      "timezone": "EDT"
+    },
+    "pre": {
+      "end": 1784295000,
+      "gmtoffset": -14400,
+      "start": 1784275200,
+      "timezone": "EDT"
+    },
+    "regular": {
+      "end": 1784318400,
+      "gmtoffset": -14400,
+      "start": 1784295000,
+      "timezone": "EDT"
+    }
+  },
+  "dataGranularity": "1d",
+  "exchangeName": "NMS",
+  "exchangeTimezoneName": "America/New_York",
+  "fiftyTwoWeekHigh": 334.98,
+  "fiftyTwoWeekLow": 201.5,
+  "firstTradeDate": 345479400,
+  "fullExchangeName": "NasdaqGS",
+  "gmtoffset": -14400,
+  "hasPrePostMarketData": true,
+  "instrumentType": "EQUITY",
+  "longName": "Apple Inc.",
+  "priceHint": 2,
+  "provider_symbol": "AAPL",
+  "range": "",
+  "regularMarketDayHigh": 334.98,
+  "regularMarketDayLow": 329.001,
+  "regularMarketPrice": 332.81,
+  "regularMarketTime": 1784300506,
+  "regularMarketVolume": 20438820,
+  "requested_symbol": "AAPL",
+  "research_status": "PROTOTYPE_UNOFFICIAL_NO_KEY_SOURCE",
+  "retrieved_at_utc": "2026-07-17T15:01:47.074343+00:00",
+  "shortName": "Apple Inc.",
+  "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/AAPL",
+  "symbol": "AAPL",
+  "timezone": "EDT",
+  "validRanges": [
+    "1d",
+    "5d",
+    "1mo",
+    "3mo",
+    "6mo",
+    "1y",
+    "2y",
+    "5y",
+    "10y",
+    "ytd",
+    "max"
+  ]
+}

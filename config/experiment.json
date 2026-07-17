@@ -1,0 +1,28 @@
+{
+  "experiment_name": "sp500_ai_information_ablation",
+  "prompt_version": "v1.0.0",
+  "as_of_date": "2026-07-17",
+  "horizon_months": 12,
+  "benchmark_symbol": "SPY",
+  "price_lookback_days": 730,
+  "model": "gpt-5.4-2026-03-05",
+  "reasoning_effort": "low",
+  "pilot_repetitions": 3,
+  "full_repetitions": 1,
+  "conditions": ["A_MEMORY_ONLY", "B_PRICE_HISTORY", "C_QUANTITATIVE", "D_CURRENT_WEB"],
+  "pilot_symbols": ["MU", "AAPL", "JPM", "JNJ", "NEE", "KO"],
+  "sector_etfs": {
+    "Information Technology": "XLK",
+    "Financials": "XLF",
+    "Health Care": "XLV",
+    "Utilities": "XLU",
+    "Consumer Staples": "XLP"
+  },
+  "sources": {
+    "spy_holdings": "https://www.ssga.com/library-content/products/fund-data/etfs/us/holdings-daily-us-en-spy.xlsx",
+    "yahoo_chart": "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}",
+    "fmp_base": "https://financialmodelingprep.com/stable",
+    "openai_structured_outputs": "https://developers.openai.com/api/docs/guides/structured-outputs",
+    "openai_web_search": "https://developers.openai.com/api/docs/guides/tools-web-search"
+  }
+}

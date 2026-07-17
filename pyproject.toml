@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sp500-ai-recommendations"
+version = "0.1.0"
+description = "Controlled comparison of AI stock classifications and analyst consensus"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "numpy>=1.26,<3",
+  "pandas>=2.2,<3",
+  "openpyxl>=3.1,<4",
+  "openai>=2.0,<3",
+]
+
+[project.scripts]
+sp500-ai = "sp500_ai.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
