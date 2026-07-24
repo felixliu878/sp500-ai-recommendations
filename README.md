@@ -1,92 +1,207 @@
 # S&P 500 AI recommendation experiment
 
-This repository is a ready-to-run research framework for testing when an AI stock classification changes as its information set expands. It compares four controlled conditions for every selected stock, then compares the AI's five-level classification with an external analyst consensus.
+This repository tests when an AI stock classification changes as its permitted information set expands. For each selected security, the system holds the model, 12-month SPY-relative decision target, five-level rating scale, and output schema constant while changing only the evidence available in four experimental conditions.
 
-The code is complete and the no-key pilot has been executed. Live AI and analyst results are intentionally not fabricated: they require the `OPENAI_API_KEY` and `FMP_API_KEY` that the professor offered to provide.
+The current protocol uses one credential: `OPENAI_API_KEY`. State Street supplies the dated SPY holdings snapshot, while Yahoo Finance interfaces and the third-party `yfinance` package supply current market, fundamental, and analyst-benchmark data without a finance API key.
 
-## What is delivered
+Yahoo/yfinance is an unofficial feasibility source intended for small academic and personal-use research. It is not a licensed production or point-in-time research feed. Confirm permitted use and obtain an appropriate licensed source before any commercial deployment, redistribution, or research design that requires historical analyst snapshots.
 
-- A dated S&P 500/SPY holdings snapshot downloader.
-- Price, technical-feature, fundamental, and analyst-consensus adapters.
-- Four versioned prompts with strict information isolation.
+## What is implemented
+
+- A dated State Street SPY holdings snapshot downloader.
+- Yahoo price-history, compact fundamental, analyst-distribution, portal-rating, and price-target adapters.
+- A strict current-day Yahoo cutoff rule and a pre-model acquisition-quality gate.
+- Locally calculated return, technical, SPY-relative, and sector-relative features.
+- Four versioned prompts with controlled information isolation; the hardened next-run version is `v1.3.0`.
 - OpenAI Responses API integration with strict structured JSON output.
-- Web search enabled only in Condition D.
-- A deterministic no-key validation backend whose every output is labeled `DRY_RUN_NOT_AI`.
-- Raw-response, prompt, feature, recommendation, analyst, condition-change, and run-manifest files.
-- Unit tests and a six-stock cross-sector pilot.
-- A research protocol, data dictionary, presentation, and word-for-word weekly meeting script.
+- Web search enabled only for Condition D, with retrieved-source and search-action audits.
+- Two analyst baselines kept separate: a researcher-normalized rating distribution and Yahoo's portal rating.
+- Observable markers of rating disagreement without reported analyst use; these are not treated as proof of internal reasoning.
+- Raw responses, exact prompts, packet hashes, data-quality files, failure logs, comparison tables, and run manifests.
+- A deterministic validation backend whose records are labeled `DRY_RUN_NOT_AI`.
+- Thirty-nine automated tests plus 32 subtests and a completed 72-cell, six-stock live pilot with append-only retry provenance.
 
 ## Experimental conditions
 
 | Condition | Information supplied to the model | Web search | Purpose |
 |---|---|---:|---|
-| A — Memory only | Company identity and common decision instructions | No | Baseline: what the model says without dated evidence |
-| B — Price history | A plus 24 monthly adjusted prices and volume | No | Isolate the effect of observable price movement |
-| C — Quantitative | B plus technical/return features, SPY/sector context, and fundamentals when available | No | Test whether structured evidence changes the classification |
-| D — Current web | C plus web search, with an as-of cutoff and source capture | Yes | Test the incremental effect of current public information |
+| A — Memory only | Company identity and sector | No | Baseline without supplied dated evidence |
+| B — Price history | A plus up to 24 monthly adjusted prices and volume through each actual observation date | No | Isolate the effect of observable price movement |
+| C — Quantitative | B plus locally calculated features, SPY/sector context, and a compact Yahoo fundamental packet | No | Test whether structured quantitative evidence changes the classification |
+| D — Current web | C plus web search, source capture, and an as-of cutoff | Yes | Test the incremental effect of current public information |
 
-All conditions use the same five labels and 12-month, SPY-relative decision target. The prompt files are in [`prompts`](./prompts), and their exact version is stored with each output.
+The model never receives either analyst benchmark directly from the research pipeline. Condition D may encounter analyst opinions through web search, so the model must disclose exposure; the system separately scans D's evidence, thesis, and risks and audits captured web-search actions.
 
-## Run it now without keys
+## Canonical live-pilot result
 
-The dry run downloads a dated State Street holdings snapshot and historical prices, computes features, renders all prompts, validates the output schema, and writes 72 pilot records (6 stocks × 4 conditions × 3 repetitions). It does **not** call an AI model, search the web, or obtain analyst ratings.
+The canonical prompt-v1.2.0 pilot is complete. The original run produced 70 successful cells and two truncated JSON failures; targeted retries of those exact two cells succeeded. The consolidated artifact therefore contains all 72 planned cells after 74 total API attempts.
+
+Post-pilot review found that v1.2.0 supplied Yahoo's forward P/E in C and D. That field can incorporate analyst earnings forecasts. The direct Yahoo rating baselines were still withheld, but the pilot cannot support a strict “no analyst-derived input” interpretation. Version 1.3.0 removes forward P/E, resolves all 11 GICS sectors from Yahoo metadata, applies the acquisition gate to every paid run, and validates evidence semantics before acceptance. Run a corrected v1.3.0 six-stock pilot before scaling to the full universe.
+
+| Condition | BUY | HOLD | Mean confidence |
+|---|---:|---:|---:|
+| A — Memory only | 0 | 18 | 27.39 |
+| B — Price history | 1 | 17 | 39.39 |
+| C — Quantitative | 13 | 5 | 66.00 |
+| D — Current web | 12 | 6 | 63.78 |
+
+The largest shift occurred when structured quantitative data were introduced. C and D still differed in 9 of 18 matched repetitions: five changed from Buy to Hold and four from Hold to Buy. Web access therefore changed judgments, but did not simply make the model more bullish.
+
+The consolidated results, evidence audit, stability table, analyst comparisons, retry history, and cost limitations are documented in [`docs/LIVE_PILOT_RESULTS.md`](./docs/LIVE_PILOT_RESULTS.md). Sanitized machine-readable artifacts are tracked at [`outputs/LIVE_PILOT_SUMMARY.json`](./outputs/LIVE_PILOT_SUMMARY.json) and [`outputs/LIVE_PILOT_VALIDATION.json`](./outputs/LIVE_PILOT_VALIDATION.json). The detailed canonical summary is generated locally at `outputs/pilot_2026-07-24_openai_20260724T132933641207Z/retries/retry_20260724T140656289007Z/pilot_summary.json`; live raw artifacts are intentionally excluded from Git.
+
+## Setup
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-PYTHONPATH=src python -m unittest discover -s tests -v
-PYTHONPATH=src python -m sp500_ai.cli pilot --backend dry-run --repetitions 3
+pip install -e '.[test]'
+PYTHONPATH=src python -m pytest -q
 ```
 
-The completed pilot is under [`outputs/pilot_2026-07-17_dry_run`](./outputs/pilot_2026-07-17_dry_run). Do not interpret its deterministic labels as AI evidence or investment advice.
-
-## Run the live pilot when the keys arrive
-
-Copy the template and insert the professor-provided keys locally. `.env` is ignored by Git.
+For live OpenAI calls, copy the ignored template and add the professor-provided key locally:
 
 ```bash
 cp .env.example .env
 # Edit .env; never commit it.
-PYTHONPATH=src python -m sp500_ai.cli pilot --backend openai --repetitions 3 --refresh
 ```
 
-For the full universe:
+The current workflow does not accept or require `FMP_API_KEY`; the undated FMP path is disabled for this cutoff-controlled protocol.
+
+## Same-day Yahoo cutoff requirement
+
+Yahoo analyst data are current snapshots rather than historical point-in-time observations. Therefore, a fresh Yahoo research fetch is permitted only when `config/experiment.json`'s `as_of_date` equals the UTC retrieval date:
 
 ```bash
-PYTHONPATH=src python -m sp500_ai.cli full --backend openai --repetitions 1 --refresh
+date -u +%F
 ```
 
-The actual call count is `number of constituent securities × 4 conditions × repetitions`. One full repetition is roughly 2,000 model calls; three repetitions are roughly 6,000. Start with the six-stock pilot, inspect costs and source quality, then freeze the configuration before the full run.
+Update `as_of_date` before a new live run and use `--refresh`. A live pilot stops before model calls unless `acquisition_gate.json` passes all required checks:
 
-## API choices
+- at least 253 price observations, which are needed to calculate a 252-session return;
+- no price after the cutoff and no more than seven days of market-data lag;
+- sufficient compact fundamental coverage;
+- no Yahoo research-provider errors;
+- a nonempty current analyst rating distribution; and
+- an available Yahoo portal rating.
 
-- **Universe snapshot:** the official [State Street SPY daily holdings workbook](https://www.ssga.com/library-content/products/fund-data/etfs/us/holdings-daily-us-en-spy.xlsx) is saved with retrieval metadata. The production FMP endpoint can also supply constituent names and sectors.
-- **Production market/analyst data:** [Financial Modeling Prep stable APIs](https://site.financialmodelingprep.com/developer/docs/stable) provide S&P constituents, [dividend-adjusted EOD prices](https://site.financialmodelingprep.com/developer/docs/stable/historical-price-eod-dividend-adjusted), TTM metrics/ratios, and [grades consensus](https://site.financialmodelingprep.com/developer/docs/stable/grades-summary) through one provider. The no-key price adapter uses Yahoo's chart response only for prototype validation and marks it unofficial.
-- **AI output:** the OpenAI Responses API uses the official [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs) JSON-schema format. Only Condition D attaches the official [web search tool](https://developers.openai.com/api/docs/guides/tools-web-search), including retrieved-source capture.
-- **Model:** the default is the dated snapshot `gpt-5.4-2026-03-05`, selected to reduce model drift; it is configurable through `OPENAI_MODEL`. Check the official [model catalog](https://developers.openai.com/api/docs/models) before freezing the live protocol.
+The cache is also rejected when its schema version, metric-set hash, cutoff, retrieval date, error state, or coverage does not match the frozen run.
 
-## Important interpretation boundaries
+## Validate without calling an AI model
 
-1. Analyst consensus counts support a comparison of **recommendations**, not analyst **reasoning**. A valid reasoning comparison requires licensed individual analyst reports, or at least dated report headlines and rationales.
-2. “Memory only” is not a point-in-time historical model. The model may contain latent older knowledge, so it is an information-ablation baseline—not a clean historical backtest.
-3. A retrospective portfolio made today with today's model would introduce look-ahead and model-version leakage. The defensible next step is a preregistered forward portfolio with predictions timestamped before returns occur.
-4. A current-constituent historical backtest introduces survivorship bias. Point-in-time membership is required for a historical benchmark comparison.
-5. Ratings are research classifications, not personalized financial advice.
+The dry-run backend still downloads or loads Yahoo research data, computes features, renders prompts, validates the schema, and writes comparison artifacts. It does not call an AI model or execute web search.
 
-The full design and analysis plan are in [`docs/METHODOLOGY.md`](./docs/METHODOLOGY.md), and field definitions are in [`docs/DATA_DICTIONARY.md`](./docs/DATA_DICTIONARY.md).
+```bash
+PYTHONPATH=src python -m sp500_ai.cli pilot \
+  --backend dry-run \
+  --repetitions 3 \
+  --refresh
+```
+
+Dry-run classifications come from a fixed routing rule and must not be interpreted as AI evidence or investment advice.
+
+## Run a new same-day smoke test and pilot
+
+These commands launch a new experiment; they do not recreate the archived July 24 API responses. Because Yahoo analyst fields are current snapshots, first update the configured cutoff to the current UTC date. Exact reproduction of the original pilot requires its frozen local artifacts, which are intentionally excluded from Git.
+
+Four-call Micron smoke test:
+
+```bash
+PYTHONPATH=src python -m sp500_ai.cli pilot \
+  --backend openai \
+  --symbols MU \
+  --repetitions 1 \
+  --refresh
+```
+
+Canonical six-stock pilot command:
+
+```bash
+PYTHONPATH=src python -m sp500_ai.cli pilot \
+  --backend openai \
+  --repetitions 3 \
+  --refresh
+```
+
+The canonical design contains exactly 72 final assessment cells:
+
+```text
+6 securities × 4 conditions × 3 repetitions = 72 cells
+```
+
+The completed pilot required 74 attempts because two original Condition D responses ended in truncated JSON and were repaired by two successful targeted retries. Retry artifacts preserve the original failures and do not overwrite the source run.
+
+Validate an accepted local artifact without loading credentials:
+
+```bash
+PYTHONPATH=src python scripts/validate_pilot.py \
+  outputs/<accepted-run-directory> \
+  --output outputs/<source-run-directory>/validation_report.json
+```
+
+The canonical accepted pilot returns `PASS_WITH_WARNINGS`: the experiment, evidence-date, prompt, raw-response, retry, packet-isolation, and web-isolation checks pass; two official PDF URLs still require manual trace review, and exact cost remains unavailable for two failed original calls.
+
+Full current SPY-holdings universe, after the corrected v1.3.0 pilot and budget approval:
+
+```bash
+PYTHONPATH=src python -m sp500_ai.cli full \
+  --backend openai \
+  --repetitions 1 \
+  --refresh
+```
+
+The exact call count is `constituent-security rows × 4 × repetitions` and is recorded in the manifest. State Street holdings can contain more than 500 security rows because of multiple share classes or temporary fund-holding adjustments.
+
+Using the pilot's known lower-bound cost per completed cell, a 504-security run is roughly $126 for one repetition or $377 for three repetitions. These are planning estimates, not budget guarantees: two failed pilot calls have unknown usage, prices can change, security counts can change, and a full run may have a different search and retry profile.
+
+## Data sources and reproducibility
+
+- **Universe:** the official [State Street SPY daily holdings workbook](https://www.ssga.com/library-content/products/fund-data/etfs/us/holdings-daily-us-en-spy.xlsx), saved unmodified with retrieval metadata.
+- **Prices:** Yahoo's chart response, cached with raw JSON and metadata.
+- **Fundamentals and analyst benchmarks:** Yahoo Finance interfaces accessed through direct requests and pinned `yfinance==1.5.2`. The compact metric set, schema version, retrieval time, cutoff, errors, and raw response are archived.
+- **AI output:** the OpenAI Responses API follows the official [Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs) format. Only Condition D attaches [web search](https://developers.openai.com/api/docs/guides/tools-web-search).
+- **Model and cost references:** the configured dated snapshot is `gpt-5.4-2026-03-05`, overridable through `OPENAI_MODEL`. Cost assumptions are linked to the official [GPT-5.4 model page](https://developers.openai.com/api/docs/models/gpt-5.4) and [OpenAI API pricing](https://developers.openai.com/api/docs/pricing).
+
+Yahoo fields can change, disappear, be rate-limited, or use methodologies that are not fully documented. The current implementation deliberately preserves missingness and errors instead of silently fabricating values.
+
+## How “AI judgment” is operationalized
+
+The experiment can observe behavior, not inspect the model's private reasoning process. Evidence consistent with additional AI judgment includes:
+
+- rating changes when the permitted information set changes;
+- disagreement with either analyst baseline when analyst opinions were not reported as used;
+- medium or high evidence sufficiency;
+- a rating that was not forced by insufficient data;
+- no analyst terms detected in the model's final evidence; and
+- for Condition D, no analyst terms detected in captured web-search actions.
+
+The output columns make these checks explicit. In the completed v1.2.0 pilot, a positive marker means disagreement without direct rating-baseline exposure under the recorded screen. It is not proof of independent judgment, particularly because forward P/E was an analyst-derived input. The v1.3.0 rerun removes that field.
+
+## Interpretation boundaries
+
+1. Yahoo's count distribution and portal recommendation are separate analyst baselines and may disagree.
+2. Neither analyst baseline shares the AI prompt's exact 12-month, risk-adjusted, SPY-relative target.
+3. Aggregate ratings compare outcomes, not individual analyst reasoning. Report-level rationales would require a permitted report source.
+4. “Memory only” is an information-ablation baseline, not a point-in-time historical model.
+5. A retrospective portfolio made with today's model creates look-ahead and model-version leakage. The defensible performance test is prospective.
+6. Current constituents create survivorship bias in historical analysis.
+7. Ratings are research classifications, not personalized financial advice.
+
+See [`docs/LIVE_PILOT_RESULTS.md`](./docs/LIVE_PILOT_RESULTS.md), [`docs/METHODOLOGY.md`](./docs/METHODOLOGY.md), [`docs/DATA_DICTIONARY.md`](./docs/DATA_DICTIONARY.md), and [`docs/API_HANDOFF.md`](./docs/API_HANDOFF.md) for the final pilot, frozen protocol, exact fields, and execution gates.
 
 ## Project map
 
 ```text
-config/experiment.json       frozen run configuration
+config/experiment.json       run configuration and cutoff
 prompts/                     canonical condition prompts
-src/sp500_ai/providers.py    universe, price, fundamentals, consensus adapters
+src/sp500_ai/providers.py    State Street universe and Yahoo data adapters
 src/sp500_ai/features.py     reproducible quantitative features
-src/sp500_ai/llm.py          schema, OpenAI client, dry-run validator
-src/sp500_ai/pipeline.py     end-to-end orchestration and artifact capture
-src/sp500_ai/analysis.py     analyst normalization and condition comparisons
-tests/                       nine unit tests
-outputs/                     run-specific data and presentation deliverables
-docs/                        methods, dictionary, and meeting script
+src/sp500_ai/llm.py          schema, OpenAI client, and dry-run validator
+src/sp500_ai/pipeline.py     acquisition gate, orchestration, and artifact capture
+src/sp500_ai/analysis.py     analyst baselines and condition comparisons
+tests/                       thirty-nine automated tests plus 32 subtests
+data/raw/                    dated provider caches
+outputs/                     run-specific research artifacts
+scripts/                     retry, summary, and credential-free validation utilities
+docs/                        protocol, dictionary, and handoff
 ```

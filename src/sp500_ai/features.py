@@ -122,16 +122,26 @@ def compute_features(
 
 
 def build_price_history_packet(frame: pd.DataFrame, months: int = 24) -> list[dict[str, Any]]:
-    data = frame.sort_values("date").set_index("date")
-    monthly = data[["adj_close", "volume"]].resample("ME").agg(
-        {"adj_close": "last", "volume": "sum"}
+    data = frame.sort_values("date").copy()
+    data["calendar_month"] = pd.to_datetime(data["date"]).dt.to_period("M").astype(str)
+    monthly = (
+        data.groupby("calendar_month", as_index=False)
+        .agg(
+            observation_date=("date", "last"),
+            adj_close=("adj_close", "last"),
+            volume=("volume", "sum"),
+        )
+        .dropna(subset=["adj_close"])
+        .tail(months)
     )
-    monthly = monthly.dropna(subset=["adj_close"]).tail(months)
     return [
         {
-            "month_end": index.date().isoformat(),
+            "calendar_month": str(row["calendar_month"]),
+            "observation_date": pd.Timestamp(row["observation_date"]).date().isoformat(),
             "adjusted_close": _finite(row["adj_close"]),
-            "monthly_volume": int(row["volume"]) if pd.notna(row["volume"]) else None,
+            "monthly_volume_through_observation_date": (
+                int(row["volume"]) if pd.notna(row["volume"]) else None
+            ),
         }
-        for index, row in monthly.iterrows()
+        for _, row in monthly.iterrows()
     ]

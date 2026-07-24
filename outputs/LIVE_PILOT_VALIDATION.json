@@ -1,0 +1,48 @@
+{
+  "validation_schema_version": "1.0-public",
+  "validated_artifact": "canonical consolidated v1.2.0 six-stock pilot",
+  "status": "PASS_WITH_WARNINGS",
+  "hard_failures": [],
+  "warnings": [
+    "Two unique official issuer PDF citations require manual source-trace review.",
+    "API cost is a lower bound because usage from two original failed calls was unavailable."
+  ],
+  "metrics": {
+    "planned_assessments": 72,
+    "expected_cells": 72,
+    "assessment_rows": 72,
+    "unique_cells": 72,
+    "stock_condition_groups": 24,
+    "expected_repetitions": 3,
+    "prompt_files_validated": 72,
+    "raw_success_responses_validated": 72,
+    "record_provenance_counts": {
+      "ORIGINAL_SUCCESS": 70,
+      "TARGETED_RETRY_SUCCESS": 2
+    },
+    "c_d_packet_identity_by_symbol": {
+      "AAPL": true,
+      "JNJ": true,
+      "JPM": true,
+      "KO": true,
+      "MU": true,
+      "NEE": true
+    },
+    "web_calls_by_condition": {
+      "A_MEMORY_ONLY": 0,
+      "B_PRICE_HISTORY": 0,
+      "C_QUANTITATIVE": 0,
+      "D_CURRENT_WEB": 107
+    },
+    "evidence_items": 532,
+    "invalid_evidence_dates": 0,
+    "post_cutoff_evidence_dates": 0,
+    "evidence_date_semantic_gaps": 0,
+    "cited_url_instances": 97,
+    "exact_source_trace_matches": 85,
+    "normalized_source_trace_matches": 4,
+    "unmatched_unique_source_url_count": 2
+  },
+  "credential_files_read": [],
+  "interpretation_note": "Artifact integrity passed. This validator does not remove the separately disclosed v1.2.0 forward-P/E design caveat."
+}

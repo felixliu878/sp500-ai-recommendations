@@ -1,2 +1,2 @@
 CONDITION C — QUANTITATIVE PACKET, NO WEB
-No web tools are available. Use only the supplied price, technical, fundamental, benchmark, and sector information. Analyst recommendations are intentionally excluded. Do not rely on model memory for facts after the stated data cutoff.
+No web tools are available. Use only the supplied price, technical, fundamental, benchmark, and sector information. Analyst recommendations and forward valuation measures based on analyst forecasts are intentionally excluded. Do not rely on model memory for facts after the stated data cutoff.

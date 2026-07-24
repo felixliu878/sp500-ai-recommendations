@@ -1,11 +1,100 @@
 import unittest
+from datetime import date
 
-from sp500_ai.providers import ticker_for_yahoo
+from sp500_ai.providers import (
+    YAHOO_FUNDAMENTAL_METRICS,
+    _current_recommendation,
+    _parse_fundamental_timeseries,
+    ticker_for_yahoo,
+)
 
 
 class ProviderTests(unittest.TestCase):
     def test_share_class_symbol_conversion(self):
         self.assertEqual(ticker_for_yahoo("BRK.B"), "BRK-B")
+
+    def test_current_consensus_selects_zero_month_row(self):
+        records = [
+            {"period": "-1m", "strongBuy": 1, "buy": 2},
+            {"period": "0m", "strongBuy": 3, "buy": 4, "hold": 1},
+        ]
+        result = _current_recommendation(records)
+        self.assertEqual(result["period"], "0m")
+        self.assertEqual(result["strongBuy"], 3)
+        self.assertEqual(result["buy"], 4)
+
+    def test_current_consensus_does_not_fallback_to_historical_row(self):
+        result = _current_recommendation(
+            [{"period": "-1m", "strongBuy": 1, "buy": 2}]
+        )
+        self.assertEqual(result, {})
+
+    def test_fundamental_parser_applies_cutoff_and_marks_missing(self):
+        metric = "trailingTotalRevenue"
+        document = {
+            "timeseries": {
+                "result": [
+                    {
+                        "meta": {"type": [metric]},
+                        metric: [
+                            {
+                                "asOfDate": "2026-05-31",
+                                "periodType": "TTM",
+                                "reportedValue": {"raw": 10},
+                            },
+                            {
+                                "asOfDate": "2026-08-31",
+                                "periodType": "TTM",
+                                "reportedValue": {"raw": 20},
+                            },
+                        ],
+                    },
+                    {
+                        "meta": {"type": ["trailingMarketCap"]},
+                        "trailingMarketCap": [
+                            {
+                                "asOfDate": "2026-07-23",
+                                "reportedValue": {"raw": 100},
+                            }
+                        ],
+                    },
+                ]
+            }
+        }
+        result = _parse_fundamental_timeseries(document, date(2026, 7, 24))
+        self.assertEqual(result[metric]["latest"]["reportedValue"]["raw"], 10)
+        self.assertIn("annualFreeCashFlow", result["missing_metrics"])
+
+    def test_fundamental_parser_rejects_missing_and_post_cutoff_dates(self):
+        metric = "trailingTotalRevenue"
+        document = {
+            "timeseries": {
+                "result": [
+                    {
+                        "meta": {"type": [metric]},
+                        metric: [
+                            {"reportedValue": {"raw": 10}},
+                            {
+                                "asOfDate": "2026-08-31",
+                                "reportedValue": {"raw": 20},
+                            },
+                        ],
+                    },
+                    {
+                        "meta": {"type": ["trailingMarketCap"]},
+                        "trailingMarketCap": [
+                            {
+                                "asOfDate": "2026-07-23",
+                                "reportedValue": {"raw": 100},
+                            }
+                        ],
+                    },
+                ]
+            }
+        }
+        result = _parse_fundamental_timeseries(document, date(2026, 7, 24))
+        self.assertIsNone(result[metric]["latest"])
+        self.assertIn(metric, result["missing_metrics"])
 
 
 if __name__ == "__main__":

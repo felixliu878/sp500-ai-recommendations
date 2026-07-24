@@ -1,10 +1,16 @@
 {
   "experiment_name": "sp500_ai_information_ablation",
-  "prompt_version": "v1.0.0",
-  "as_of_date": "2026-07-17",
+  "prompt_version": "v1.3.0",
+  "as_of_date": "2026-07-24",
   "horizon_months": 12,
   "benchmark_symbol": "SPY",
   "price_lookback_days": 730,
+  "data_provider": "yahoo",
+  "yahoo_request_delay_seconds": 1.0,
+  "execution_seed": 20260724,
+  "max_output_tokens": 6000,
+  "consecutive_failure_limit": 3,
+  "total_failure_limit": 6,
   "model": "gpt-5.4-2026-03-05",
   "reasoning_effort": "low",
   "pilot_repetitions": 3,
@@ -12,16 +18,22 @@
   "conditions": ["A_MEMORY_ONLY", "B_PRICE_HISTORY", "C_QUANTITATIVE", "D_CURRENT_WEB"],
   "pilot_symbols": ["MU", "AAPL", "JPM", "JNJ", "NEE", "KO"],
   "sector_etfs": {
-    "Information Technology": "XLK",
+    "Communication Services": "XLC",
+    "Consumer Discretionary": "XLY",
+    "Consumer Staples": "XLP",
+    "Energy": "XLE",
     "Financials": "XLF",
     "Health Care": "XLV",
-    "Utilities": "XLU",
-    "Consumer Staples": "XLP"
+    "Industrials": "XLI",
+    "Information Technology": "XLK",
+    "Materials": "XLB",
+    "Real Estate": "XLRE",
+    "Utilities": "XLU"
   },
   "sources": {
     "spy_holdings": "https://www.ssga.com/library-content/products/fund-data/etfs/us/holdings-daily-us-en-spy.xlsx",
     "yahoo_chart": "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}",
-    "fmp_base": "https://financialmodelingprep.com/stable",
+    "yahoo_fundamentals": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/{symbol}",
     "openai_structured_outputs": "https://developers.openai.com/api/docs/guides/structured-outputs",
     "openai_web_search": "https://developers.openai.com/api/docs/guides/tools-web-search"
   }

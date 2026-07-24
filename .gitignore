@@ -8,3 +8,9 @@ build/
 dist/
 *.egg-info/
 ~$*.pptx
+
+# Live provider caches and run artifacts can contain third-party data,
+# large raw responses, and research traces. Keep aggregate findings in docs/.
+data/raw/prices/yahoo_prototype/*/
+data/raw/research/
+outputs/pilot_*/

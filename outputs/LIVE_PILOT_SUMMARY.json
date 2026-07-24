@@ -1,0 +1,138 @@
+{
+  "summary_schema_version": "1.0-public",
+  "research_only_not_investment_advice": true,
+  "run": {
+    "accepted_run_id": "20260724T132933641207Z__retry_20260724T140656289007Z",
+    "as_of_date": "2026-07-24",
+    "prompt_version": "v1.2.0",
+    "model": "gpt-5.4-2026-03-05",
+    "symbols": ["AAPL", "JNJ", "JPM", "KO", "MU", "NEE"],
+    "conditions": [
+      "A_MEMORY_ONLY",
+      "B_PRICE_HISTORY",
+      "C_QUANTITATIVE",
+      "D_CURRENT_WEB"
+    ],
+    "repetitions": 3
+  },
+  "completion": {
+    "planned_final_cells": 72,
+    "valid_final_cells": 72,
+    "total_api_attempts": 74,
+    "original_successes": 70,
+    "targeted_retry_successes": 2,
+    "unresolved_failures": 0
+  },
+  "condition_results": {
+    "A_MEMORY_ONLY": {
+      "BUY": 0,
+      "HOLD": 18,
+      "mean_confidence": 27.39,
+      "forced_ratings": 18
+    },
+    "B_PRICE_HISTORY": {
+      "BUY": 1,
+      "HOLD": 17,
+      "mean_confidence": 39.39,
+      "forced_ratings": 17
+    },
+    "C_QUANTITATIVE": {
+      "BUY": 13,
+      "HOLD": 5,
+      "mean_confidence": 66.0,
+      "forced_ratings": 0
+    },
+    "D_CURRENT_WEB": {
+      "BUY": 12,
+      "HOLD": 6,
+      "mean_confidence": 63.78,
+      "forced_ratings": 0
+    }
+  },
+  "ratings_not_observed": ["STRONG_BUY", "SELL", "STRONG_SELL"],
+  "condition_transitions": {
+    "A_to_C_changed": 13,
+    "A_to_C_total": 18,
+    "A_to_C_direction": {
+      "HOLD_to_BUY": 13
+    },
+    "C_to_D_changed": 9,
+    "C_to_D_total": 18,
+    "C_to_D_direction": {
+      "BUY_to_HOLD": 5,
+      "HOLD_to_BUY": 4
+    },
+    "C_to_D_mean_signed_ordinal_change": -0.0556
+  },
+  "analyst_comparison": {
+    "count_normalized_baseline": "BUY for all six symbols",
+    "yahoo_portal_baseline": "BUY for five symbols; STRONG_BUY for MU",
+    "C_exact_match_count_normalized_pct": 72.2,
+    "C_exact_match_yahoo_portal_pct": 66.7,
+    "D_exact_match_count_normalized_pct": 66.7,
+    "D_exact_match_yahoo_portal_pct": 50.0,
+    "C_strict_disagreements_count_normalized": "5/18",
+    "C_strict_disagreements_yahoo_portal": "6/18",
+    "D_strict_disagreements_count_normalized": "6/17",
+    "D_strict_disagreements_yahoo_portal": "9/17",
+    "reported_analyst_use_count": 0,
+    "reported_analyst_encounter_without_use_count": 1
+  },
+  "stability": {
+    "unanimous_stock_condition_groups": 16,
+    "total_stock_condition_groups": 24,
+    "mean_modal_agreement_pct": 88.9,
+    "unanimous_groups_by_condition": {
+      "A_MEMORY_ONLY": "6/6",
+      "B_PRICE_HISTORY": "5/6",
+      "C_QUANTITATIVE": "3/6",
+      "D_CURRENT_WEB": "2/6"
+    }
+  },
+  "evidence_and_web_audit": {
+    "evidence_items": 532,
+    "invalid_evidence_dates": 0,
+    "post_cutoff_evidence_dates": 0,
+    "D_web_citation_instances": 97,
+    "D_primary_citation_instances": 96,
+    "D_secondary_citation_instances": 1,
+    "unique_web_urls": 45,
+    "unique_web_domains": 11,
+    "exact_source_trace_matches": 85,
+    "normalized_source_trace_matches": 4,
+    "unmatched_unique_official_pdf_urls": 2,
+    "web_search_calls_by_condition": {
+      "A_MEMORY_ONLY": 0,
+      "B_PRICE_HISTORY": 0,
+      "C_QUANTITATIVE": 0,
+      "D_CURRENT_WEB": 107
+    }
+  },
+  "usage_and_cost": {
+    "recorded_input_tokens": 724792,
+    "recorded_output_tokens": 106967,
+    "recorded_total_tokens": 831759,
+    "recorded_web_search_calls": 107,
+    "known_lower_bound_cost_usd": 4.486485,
+    "exact_cost_available": false,
+    "unknown_paid_failure_usage_count": 2
+  },
+  "scale_planning": {
+    "state_street_snapshot_date": "2026-07-23",
+    "snapshot_security_rows": 504,
+    "estimated_one_repetition_cost_usd": 126,
+    "estimated_three_repetition_cost_usd": 377,
+    "budget_guarantee": false
+  },
+  "interpretation": {
+    "supported": "The model is sensitive to added information and sometimes disagrees with the direct analyst-rating baselines.",
+    "v1_2_design_caveat": "C and D included Yahoo forward P/E, which can embed analyst forecast earnings; the direct rating baselines were withheld, but zero analyst-derived influence cannot be claimed.",
+    "v1_3_protocol_correction": "Forward P/E is removed; all 11 GICS sectors are mapped; every paid run uses the strict acquisition gate; evidence is validated before acceptance.",
+    "not_supported": [
+      "Access to or proof of the model's private reasoning",
+      "Independence from all latent analyst influence",
+      "Investment skill or outperformance"
+    ],
+    "required_next_step": "Run a corrected v1.3 six-stock pilot before the full universe; evaluate performance later with timestamped predictions and a preregistered portfolio."
+  }
+}

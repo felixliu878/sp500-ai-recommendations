@@ -47,26 +47,79 @@ def attach_analyst_comparison(
         return recommendations.copy()
     result = recommendations.copy()
     if consensus.empty:
-        result["analyst_score"] = pd.NA
-        result["analyst_rating"] = pd.NA
-        result["ordinal_gap_vs_analyst"] = pd.NA
-        result["exact_match_analyst"] = pd.NA
+        result["count_normalized_score"] = pd.NA
+        result["count_normalized_rating"] = pd.NA
+        result["portal_rating_yahoo"] = pd.NA
+        result["ordinal_gap_vs_count_normalized_analyst"] = pd.NA
+        result["exact_match_count_normalized_analyst"] = pd.NA
+        result["ordinal_gap_vs_portal_yahoo"] = pd.NA
+        result["exact_match_portal_yahoo"] = pd.NA
+        result[
+            "rating_differs_from_portal_without_reported_analyst_use_and_sufficient_evidence"
+        ] = pd.NA
+        result[
+            "rating_differs_from_count_normalized_without_reported_analyst_use_and_sufficient_evidence"
+        ] = pd.NA
         return result
     lookup = consensus.set_index("symbol")
-    result["analyst_score"] = result["symbol"].map(lookup["analyst_score"])
-    result["analyst_rating"] = result["symbol"].map(lookup["analyst_rating"])
-    result["ordinal_gap_vs_analyst"] = result.apply(
+    result["count_normalized_score"] = result["symbol"].map(lookup["count_normalized_score"])
+    result["count_normalized_rating"] = result["symbol"].map(
+        lookup["count_normalized_rating"]
+    )
+    result["portal_rating_yahoo"] = result["symbol"].map(lookup["portal_rating_yahoo"])
+    result["ordinal_gap_vs_count_normalized_analyst"] = result.apply(
         lambda row: (
-            row["rating_score"] - RATING_SCORE[row["analyst_rating"]]
-            if pd.notna(row["analyst_rating"])
+            row["rating_score"] - RATING_SCORE[row["count_normalized_rating"]]
+            if pd.notna(row["count_normalized_rating"])
             else pd.NA
         ),
         axis=1,
     )
-    result["exact_match_analyst"] = result.apply(
-        lambda row: row["rating"] == row["analyst_rating"]
-        if pd.notna(row["analyst_rating"])
+    result["exact_match_count_normalized_analyst"] = result.apply(
+        lambda row: row["rating"] == row["count_normalized_rating"]
+        if pd.notna(row["count_normalized_rating"])
         else pd.NA,
+        axis=1,
+    )
+    result["ordinal_gap_vs_portal_yahoo"] = result.apply(
+        lambda row: (
+            row["rating_score"] - RATING_SCORE[row["portal_rating_yahoo"]]
+            if pd.notna(row["portal_rating_yahoo"])
+            else pd.NA
+        ),
+        axis=1,
+    )
+    result["exact_match_portal_yahoo"] = result.apply(
+        lambda row: row["rating"] == row["portal_rating_yahoo"]
+        if pd.notna(row["portal_rating_yahoo"])
+        else pd.NA,
+        axis=1,
+    )
+    def qualifies(row: pd.Series) -> bool:
+        return bool(
+            not bool(row.get("analyst_opinions_used", False))
+            and not bool(row.get("forced_rating_due_to_insufficient_data", False))
+            and row.get("evidence_sufficiency") in {"MEDIUM", "HIGH"}
+        )
+
+    result[
+        "rating_differs_from_portal_without_reported_analyst_use_and_sufficient_evidence"
+    ] = result.apply(
+        lambda row: (
+            bool(row["rating"] != row["portal_rating_yahoo"] and qualifies(row))
+            if pd.notna(row["portal_rating_yahoo"])
+            else pd.NA
+        ),
+        axis=1,
+    )
+    result[
+        "rating_differs_from_count_normalized_without_reported_analyst_use_and_sufficient_evidence"
+    ] = result.apply(
+        lambda row: (
+            bool(row["rating"] != row["count_normalized_rating"] and qualifies(row))
+            if pd.notna(row["count_normalized_rating"])
+            else pd.NA
+        ),
         axis=1,
     )
     return result

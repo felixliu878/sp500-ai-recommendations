@@ -33,6 +33,11 @@ class FeatureTests(unittest.TestCase):
         packet = build_price_history_packet(self.frame, months=6)
         self.assertEqual(len(packet), 6)
         self.assertIn("adjusted_close", packet[-1])
+        self.assertLessEqual(
+            packet[-1]["observation_date"],
+            self.frame["date"].max().date().isoformat(),
+        )
+        self.assertNotIn("month_end", packet[-1])
 
 
 if __name__ == "__main__":

@@ -7,7 +7,14 @@ from sp500_ai.prompts import PromptBuilder, packet_for_condition
 class PromptTests(unittest.TestCase):
     def setUp(self):
         self.builder = PromptBuilder(PROJECT_ROOT / "prompts", "test-v1")
-        self.history = [{"month_end": "2026-06-30", "adjusted_close": 100, "monthly_volume": 50}]
+        self.history = [
+            {
+                "calendar_month": "2026-06",
+                "observation_date": "2026-06-30",
+                "adjusted_close": 100,
+                "monthly_volume_through_observation_date": 50,
+            }
+        ]
         self.features = {"return_12m": 0.1}
 
     def packet(self, condition):
