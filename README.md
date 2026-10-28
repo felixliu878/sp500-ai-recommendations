@@ -1,5 +1,13 @@
 # S&P 500 AI recommendation experiment
 
+![Python](https://img.shields.io/badge/python-3.11%2B-blue) ![Tests](https://img.shields.io/badge/tests-39%20passed-brightgreen) ![OpenAI Responses API](https://img.shields.io/badge/OpenAI-Responses%20API-412991) ![Status](https://img.shields.io/badge/status-live%20pilot%20complete-orange)
+
+> **At a glance.** A controlled research pipeline that asks: *when does an LLM start applying its own judgment to stock ratings?* The same model rates the same S&P 500 stocks under four information conditions (memory only → price history → quantitative features → live web search). Every prompt, raw response, data packet hash, and retry is logged so each rating can be audited and reproduced.
+>
+> **Headline pilot result (72 cells, 6 stocks × 4 conditions × 3 repetitions).** Buy ratings went from 0/18 (memory only) to 13/18 once structured quantitative data were introduced, and mean confidence rose from 27 to 66. Adding web search changed 9 of 18 matched judgments in *both* directions, so the extra information did not simply make the model more bullish.
+>
+> **Skills demonstrated:** experimental design and information isolation · financial data engineering (State Street holdings, Yahoo Finance) · feature engineering with pandas/NumPy · LLM structured outputs and tool-use auditing · data-quality gates · reproducible research artifacts · automated testing.
+
 This repository tests when an AI stock classification changes as its permitted information set expands. For each selected security, the system holds the model, 12-month SPY-relative decision target, five-level rating scale, and output schema constant while changing only the evidence available in four experimental conditions.
 
 The current protocol uses one credential: `OPENAI_API_KEY`. State Street supplies the dated SPY holdings snapshot, while Yahoo Finance interfaces and the third-party `yfinance` package supply current market, fundamental, and analyst-benchmark data without a finance API key.
@@ -59,7 +67,7 @@ pip install -e '.[test]'
 PYTHONPATH=src python -m pytest -q
 ```
 
-For live OpenAI calls, copy the ignored template and add the professor-provided key locally:
+For live OpenAI calls, copy the ignored template and add your OpenAI API key locally:
 
 ```bash
 cp .env.example .env
