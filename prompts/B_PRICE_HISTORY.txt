@@ -1,2 +1,3 @@
-CONDITION B — EXPLICIT PRICE HISTORY, NO WEB
-No web tools are available. Use only the supplied dated price-history packet. The latest calendar month may be partial: use each observation_date as the true cutoff and treat volume as month-to-date through that date. Analyst recommendations, company news, and fundamentals are intentionally excluded. Do not rely on model memory for facts after the stated data cutoff.
+CONDITION B — EXPLICIT 12-MONTH PRICE HISTORY, NO WEB
+No web tools are available. Use only the supplied 12 dated monthly price observations. The latest calendar month may be partial: use each observation_date as the true cutoff and treat volume as month-to-date through that date. Analyst recommendations, company news, and fundamentals are intentionally excluded. Do not rely on model memory for facts after the stated data cutoff.
+Any return, trend, momentum, or volatility claim inferred from these monthly rows still uses origin=SUPPLIED_PRICE, never SUPPLIED_TECHNICAL.

@@ -7,6 +7,7 @@ import os
 import random
 import re
 import time
+import tempfile
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -53,9 +54,29 @@ YAHOO_LOCALLY_DERIVED_FIELDS = {
 }
 
 
-def _write_json(path: Path, value: Any) -> None:
+def _atomic_write_bytes(path: Path, value: bytes) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(value, indent=2, sort_keys=True, default=str), encoding="utf-8")
+    with tempfile.NamedTemporaryFile(
+        mode="wb", dir=path.parent, prefix=f".{path.name}.", delete=False
+    ) as handle:
+        temporary = Path(handle.name)
+        handle.write(value)
+        handle.flush()
+        os.fsync(handle.fileno())
+    try:
+        os.replace(temporary, path)
+    finally:
+        if temporary.exists():
+            temporary.unlink()
+
+
+def _write_json(path: Path, value: Any) -> None:
+    payload = json.dumps(value, indent=2, sort_keys=True, default=str).encode("utf-8")
+    _atomic_write_bytes(path, payload)
+
+
+def _write_frame(path: Path, frame: pd.DataFrame) -> None:
+    _atomic_write_bytes(path, frame.to_csv(index=False).encode("utf-8"))
 
 
 def _cache_price(
@@ -67,7 +88,7 @@ def _cache_price(
 ) -> None:
     cache_dir.mkdir(parents=True, exist_ok=True)
     safe = symbol.replace("/", "-")
-    result.frame.to_csv(cache_dir / f"{safe}.csv", index=False)
+    _write_frame(cache_dir / f"{safe}.csv", result.frame)
     metadata = dict(result.metadata)
     if start is not None and end is not None:
         metadata.update(
@@ -90,14 +111,18 @@ def _load_cached_price(
     raw_path = cache_dir / f"{safe}.raw.json"
     if not (csv_path.exists() and metadata_path.exists() and raw_path.exists()):
         return None
-    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    try:
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        raw = json.loads(raw_path.read_text(encoding="utf-8"))
+        frame = pd.read_csv(csv_path, parse_dates=["date"]).sort_values("date")
+    except (OSError, ValueError, json.JSONDecodeError, pd.errors.ParserError):
+        return None
     if metadata.get("cache_schema_version") != PRICE_CACHE_SCHEMA_VERSION:
         return None
     if metadata.get("requested_start") != start.isoformat():
         return None
     if metadata.get("requested_end") != end.isoformat():
         return None
-    frame = pd.read_csv(csv_path, parse_dates=["date"]).sort_values("date")
     if frame.empty or frame["date"].isna().any():
         return None
     if frame["date"].max().date() > end:
@@ -110,7 +135,7 @@ def _load_cached_price(
     return PriceResult(
         frame=frame,
         metadata=metadata,
-        raw=json.loads(raw_path.read_text(encoding="utf-8")),
+        raw=raw,
         provider="cache",
     )
 
@@ -400,13 +425,42 @@ def _normalize_consensus(symbol: str, raw: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _analyst_benchmark_coverage(
+    quality_rows: list[dict[str, Any]],
+) -> dict[str, Any]:
+    issues: list[dict[str, str]] = []
+    distribution_available = 0
+    portal_available = 0
+    for row in quality_rows:
+        symbol = str(row["symbol"])
+        if int(row["analyst_count_current_distribution"]) > 0:
+            distribution_available += 1
+        else:
+            issues.append(
+                {"symbol": symbol, "issue": "current analyst distribution is missing"}
+            )
+        if bool(row["portal_rating_available"]):
+            portal_available += 1
+        else:
+            issues.append(
+                {"symbol": symbol, "issue": "Yahoo portal rating is missing"}
+            )
+    return {
+        "status": "COMPLETE" if not issues else "PARTIAL",
+        "issues": issues,
+        "analyst_distribution_available": distribution_available,
+        "portal_rating_available": portal_available,
+        "security_count": len(quality_rows),
+    }
+
+
 def _save_universe_snapshot(config: ExperimentConfig, output_dir: Path) -> tuple[pd.DataFrame, dict[str, Any]]:
     provider = StateStreetUniverseProvider(config.sources["spy_holdings"])
     frame, metadata, payload = provider.fetch()
     snapshot_dir = output_dir / "universe_snapshot"
     snapshot_dir.mkdir(parents=True, exist_ok=True)
-    (snapshot_dir / "spy_holdings.xlsx").write_bytes(payload)
-    frame.to_csv(snapshot_dir / "spy_holdings.csv", index=False)
+    _atomic_write_bytes(snapshot_dir / "spy_holdings.xlsx", payload)
+    _write_frame(snapshot_dir / "spy_holdings.csv", frame)
     _write_json(snapshot_dir / "metadata.json", metadata)
     return frame, metadata
 
@@ -441,8 +495,20 @@ def run_experiment(
     price_lookback_days = _positive_int(
         config.price_lookback_days, "price_lookback_days"
     )
+    price_history_frequency = str(
+        config.raw.get("price_history_frequency", "monthly")
+    ).strip().lower()
+    if price_history_frequency != "monthly":
+        raise ValueError("price_history_frequency must be 'monthly'")
+    price_history_observations = _positive_int(
+        config.raw.get("price_history_observations", 24),
+        "price_history_observations",
+    )
     max_output_tokens = _positive_int(
         config.raw.get("max_output_tokens", 3000), "max_output_tokens"
+    )
+    web_max_tool_calls = _positive_int(
+        config.raw.get("web_max_tool_calls", 4), "web_max_tool_calls"
     )
     consecutive_failure_limit = _positive_int(
         config.raw.get("consecutive_failure_limit", 3),
@@ -579,6 +645,9 @@ def run_experiment(
         yahoo_sector = str(
             research_result.metadata.get("sector_gics") or ""
         ).strip()
+        configured_override = (config.raw.get("sector_overrides") or {}).get(symbol) or {}
+        override_sector = str(configured_override.get("sector") or "").strip()
+        override_source = str(configured_override.get("source") or "").strip()
         if (
             existing_sector
             and existing_sector != "-"
@@ -592,17 +661,26 @@ def run_experiment(
                     "yahoo_sector": yahoo_sector,
                 }
             )
-        resolved_sector = yahoo_sector or (
+        resolved_sector = yahoo_sector or override_sector or (
             existing_sector if existing_sector != "-" else ""
         )
         universe.at[index, "sector"] = resolved_sector
         universe.at[index, "sector_source"] = (
             "YAHOO_INFO"
             if yahoo_sector
-            else ("SUPPLIED_UNIVERSE_FALLBACK" if resolved_sector else "UNRESOLVED")
+            else (
+                "VERIFIED_CONFIG_OVERRIDE"
+                if override_sector
+                else ("SUPPLIED_UNIVERSE_FALLBACK" if resolved_sector else "UNRESOLVED")
+            )
+        )
+        universe.at[index, "sector_source_reference"] = (
+            "Yahoo Finance metadata"
+            if yahoo_sector
+            else (override_source if override_sector else "")
         )
 
-    universe.to_csv(output_dir / "experiment_universe.csv", index=False)
+    _write_frame(output_dir / "experiment_universe.csv", universe)
 
     benchmark_symbol = str(config.benchmark_symbol)
     benchmark_frame = fetch_price(benchmark_symbol).frame
@@ -626,8 +704,8 @@ def run_experiment(
             context_quality_rows.append(
                 _price_quality_row(f"sector:{sector}:{etf}", frame, as_of)
             )
-    pd.DataFrame(context_quality_rows).to_csv(
-        output_dir / "context_data_quality.csv", index=False
+    _write_frame(
+        output_dir / "context_data_quality.csv", pd.DataFrame(context_quality_rows)
     )
 
     features_by_symbol: dict[str, dict[str, Any]] = {}
@@ -648,7 +726,9 @@ def run_experiment(
             sector_frame=sector_frames.get(sector_etf),
         )
         features_by_symbol[symbol] = features
-        history_by_symbol[symbol] = build_price_history_packet(stock_frame)
+        history_by_symbol[symbol] = build_price_history_packet(
+            stock_frame, months=price_history_observations
+        )
         research_result = research_by_symbol[symbol]
         fundamentals_by_symbol[symbol] = research_result.fundamentals
         analyst_raw = research_result.analyst_consensus
@@ -697,7 +777,7 @@ def run_experiment(
                 ),
             }
         )
-    pd.DataFrame(feature_rows).to_csv(output_dir / "features.csv", index=False)
+    _write_frame(output_dir / "features.csv", pd.DataFrame(feature_rows))
 
     analyst_columns = [
         "symbol", "strong_buy", "buy", "hold", "sell", "strong_sell", "analyst_count",
@@ -708,30 +788,30 @@ def run_experiment(
         "price_target_high", "retrieved_at_utc", "raw_consensus",
     ]
     analyst_frame = pd.DataFrame(analyst_rows, columns=analyst_columns)
-    analyst_frame.to_csv(output_dir / "analyst_consensus.csv", index=False)
+    _write_frame(output_dir / "analyst_consensus.csv", analyst_frame)
     quality_frame = pd.DataFrame(quality_rows)
-    quality_frame.to_csv(output_dir / "data_quality.csv", index=False)
+    _write_frame(output_dir / "data_quality.csv", quality_frame)
 
-    gate_issues: list[dict[str, Any]] = []
+    model_gate_issues: list[dict[str, Any]] = []
     for row in context_quality_rows:
         context = str(row["context"])
         if int(row["price_observations"]) < 253:
-            gate_issues.append(
+            model_gate_issues.append(
                 {"context": context, "issue": "fewer than 253 price observations"}
             )
         if int(row["price_lag_days"]) < 0:
-            gate_issues.append(
+            model_gate_issues.append(
                 {"context": context, "issue": "price data extend past cutoff"}
             )
         if int(row["price_lag_days"]) > 7:
-            gate_issues.append(
+            model_gate_issues.append(
                 {
                     "context": context,
                     "issue": "price data are stale by more than 7 days",
                 }
             )
     for conflict in sector_conflicts:
-        gate_issues.append(
+        model_gate_issues.append(
             {
                 "symbol": conflict["symbol"],
                 "issue": (
@@ -744,27 +824,33 @@ def run_experiment(
     for row in quality_rows:
         symbol = row["symbol"]
         if int(row["price_observations"]) < 253:
-            gate_issues.append({"symbol": symbol, "issue": "fewer than 253 price observations"})
+            model_gate_issues.append({"symbol": symbol, "issue": "fewer than 253 price observations"})
         if int(row["price_lag_days"]) < 0:
-            gate_issues.append({"symbol": symbol, "issue": "price data extend past cutoff"})
+            model_gate_issues.append({"symbol": symbol, "issue": "price data extend past cutoff"})
         if int(row["price_lag_days"]) > 7:
-            gate_issues.append({"symbol": symbol, "issue": "price data are stale by more than 7 days"})
+            model_gate_issues.append({"symbol": symbol, "issue": "price data are stale by more than 7 days"})
         if not bool(row["sector_resolved"]):
-            gate_issues.append({"symbol": symbol, "issue": "GICS sector is unresolved"})
+            model_gate_issues.append({"symbol": symbol, "issue": "GICS sector is unresolved"})
         if not bool(row["sector_etf_available"]):
-            gate_issues.append(
+            model_gate_issues.append(
                 {"symbol": symbol, "issue": "sector ETF mapping is missing"}
             )
-        if scope == "full" and row["sector_source"] != "YAHOO_INFO":
-            gate_issues.append(
+        if scope == "full" and row["sector_source"] not in {
+            "YAHOO_INFO",
+            "VERIFIED_CONFIG_OVERRIDE",
+        }:
+            model_gate_issues.append(
                 {
                     "symbol": symbol,
-                    "issue": "full-universe sector was not resolved from Yahoo metadata",
+                    "issue": (
+                        "full-universe sector was not resolved from Yahoo metadata "
+                        "or a documented override"
+                    ),
                 }
             )
         missing_metrics = json.loads(str(row["missing_fundamental_metrics"]))
         if len(missing_metrics) > 4 or int(row["fundamental_fields"]) < 8:
-            gate_issues.append(
+            model_gate_issues.append(
                 {
                     "symbol": symbol,
                     "issue": (
@@ -774,26 +860,31 @@ def run_experiment(
                 }
             )
         if json.loads(str(row["research_errors"])):
-            gate_issues.append({"symbol": symbol, "issue": "research provider returned errors"})
+            model_gate_issues.append({"symbol": symbol, "issue": "research provider returned errors"})
         if row["research_data_cutoff"] != config.as_of_date:
-            gate_issues.append(
+            model_gate_issues.append(
                 {"symbol": symbol, "issue": "research data cutoff does not match the run"}
             )
-        if int(row["analyst_count_current_distribution"]) <= 0:
-            gate_issues.append({"symbol": symbol, "issue": "current analyst distribution is missing"})
-        if not bool(row["portal_rating_available"]):
-            gate_issues.append({"symbol": symbol, "issue": "Yahoo portal rating is missing"})
+    benchmark_coverage = _analyst_benchmark_coverage(quality_rows)
 
     acquisition_gate = {
-        "status": "PASS" if not gate_issues else "FAIL",
+        "status": "PASS" if not model_gate_issues else "FAIL",
         "checked_at_utc": datetime.now(timezone.utc).isoformat(),
         "strict_for_this_run": bool(backend == "openai"),
-        "issues": gate_issues,
+        "issues": model_gate_issues,
+        "analyst_benchmark_status": benchmark_coverage["status"],
+        "analyst_benchmark_issues": benchmark_coverage["issues"],
+        "analyst_distribution_available": benchmark_coverage[
+            "analyst_distribution_available"
+        ],
+        "portal_rating_available": benchmark_coverage["portal_rating_available"],
+        "security_count": benchmark_coverage["security_count"],
     }
     _write_json(output_dir / "acquisition_gate.json", acquisition_gate)
-    if backend == "openai" and gate_issues:
+    if backend == "openai" and model_gate_issues:
         raise RuntimeError(
-            f"Acquisition quality gate failed before model calls: {gate_issues}"
+            "Acquisition quality gate failed before model calls: "
+            f"{model_gate_issues}"
         )
 
     if backend == "openai":
@@ -802,6 +893,7 @@ def run_experiment(
             config.model,
             str(config.reasoning_effort),
             max_output_tokens,
+            web_max_tool_calls,
         )
     else:
         client = DryRunClient()
@@ -997,8 +1089,11 @@ def run_experiment(
                     break
 
     recommendations = attach_analyst_comparison(pd.DataFrame(records), analyst_frame)
-    recommendations.to_csv(output_dir / "recommendations.csv", index=False)
-    condition_flip_summary(recommendations).to_csv(output_dir / "condition_changes.csv", index=False)
+    _write_frame(output_dir / "recommendations.csv", recommendations)
+    _write_frame(
+        output_dir / "condition_changes.csv",
+        condition_flip_summary(recommendations),
+    )
     failure_columns = [
         "run_id",
         "execution_order",
@@ -1015,8 +1110,9 @@ def run_experiment(
         "web_search_call_count",
         "failed_raw_artifact",
     ]
-    pd.DataFrame(failures, columns=failure_columns).to_csv(
-        output_dir / "assessment_errors.csv", index=False
+    _write_frame(
+        output_dir / "assessment_errors.csv",
+        pd.DataFrame(failures, columns=failure_columns),
     )
     total_tokens = (
         int(pd.to_numeric(recommendations.get("total_tokens"), errors="coerce").fillna(0).sum())
@@ -1037,6 +1133,7 @@ def run_experiment(
         "run_started_at_utc": run_started_at.isoformat(),
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "as_of_date": config.as_of_date,
+        "prompt_version": config.prompt_version,
         "horizon_months": horizon_months,
         "price_lookback_days": price_lookback_days,
         "scope": scope,
@@ -1065,6 +1162,9 @@ def run_experiment(
         ),
         "data_provider_mode": provider_mode,
         "price_provider": "Yahoo chart (unofficial)",
+        "price_history_frequency": price_history_frequency,
+        "price_history_observations": price_history_observations,
+        "web_max_tool_calls": web_max_tool_calls,
         "fundamental_provider": "Yahoo Finance via yfinance (unofficial)",
         "analyst_provider": "Yahoo Finance via yfinance (unofficial)",
         "universe_snapshot": universe_metadata,

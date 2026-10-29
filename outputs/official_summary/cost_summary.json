@@ -1,0 +1,49 @@
+{
+  "cost_is_lower_bound": true,
+  "downloaded_success_responses_including_retries": 6212,
+  "estimated_billed_cost_usd": 243.241438,
+  "pricing_basis": {
+    "cached_input_usd_per_million": 0.13,
+    "model": "gpt-5.4 batch short-context",
+    "output_usd_per_million": 7.5,
+    "source": "https://developers.openai.com/api/docs/pricing",
+    "uncached_input_usd_per_million": 1.25,
+    "web_search_usd_per_call": 0.01
+  },
+  "usage": {
+    "cached_input_tokens": 10395648,
+    "input_tokens": 78877923,
+    "output_tokens": 9722288,
+    "web_search_calls": 8337
+  },
+  "usage_by_condition_code": {
+    "A": {
+      "cached_input_tokens": 0,
+      "estimated_cost_usd": 9.204321,
+      "input_tokens": 1493555,
+      "output_tokens": 978317,
+      "web_search_calls": 0
+    },
+    "B": {
+      "cached_input_tokens": 25344,
+      "estimated_cost_usd": 13.079972,
+      "input_tokens": 2275356,
+      "output_tokens": 1368555,
+      "web_search_calls": 0
+    },
+    "C": {
+      "cached_input_tokens": 1253760,
+      "estimated_cost_usd": 17.956184,
+      "input_tokens": 4324020,
+      "output_tokens": 1860716,
+      "web_search_calls": 0
+    },
+    "D": {
+      "cached_input_tokens": 9116544,
+      "estimated_cost_usd": 203.000961,
+      "input_tokens": 70784992,
+      "output_tokens": 5514700,
+      "web_search_calls": 8337
+    }
+  }
+}

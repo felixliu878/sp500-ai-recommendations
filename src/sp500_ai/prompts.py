@@ -37,10 +37,14 @@ class PromptBuilder:
             "horizon_months": horizon_months,
             "prompt_version": self.prompt_version,
         }
+        # Preserve every field while avoiding paid input tokens for JSON
+        # indentation and spaces. The prompt SHA still records the exact text.
+        identity_json = json.dumps(identity, sort_keys=True, separators=(",", ":"))
+        packet_json = json.dumps(packet, sort_keys=True, separators=(",", ":"))
         return (
             f"{base}\n\n{overlay}\n\n"
-            f"COMPANY IDENTITY\n{json.dumps(identity, indent=2, sort_keys=True)}\n\n"
-            f"CONDITION DATA PACKET\n{json.dumps(packet, indent=2, sort_keys=True)}"
+            f"COMPANY IDENTITY\n{identity_json}\n\n"
+            f"CONDITION DATA PACKET\n{packet_json}"
         )
 
 

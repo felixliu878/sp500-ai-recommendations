@@ -111,7 +111,10 @@ class StateStreetUniverseProvider:
             ticker = row[1] if len(row) > 1 else None
             if not name or not ticker:
                 continue
-            if str(ticker).upper() in {"USD", "CASH_USD"}:
+            if str(ticker).strip().upper() in {"USD", "CASH_USD", "-"}:
+                # State Street currently labels the fund's US-dollar cash
+                # balance with ticker "-". It is a holding row, not an
+                # investable S&P 500 security.
                 continue
             if str(name).upper().startswith("CONTRA "):
                 # Temporary corporate-action receivables can appear in fund holdings

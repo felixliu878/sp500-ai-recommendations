@@ -1,5 +1,7 @@
 # Live six-stock pilot results
 
+> **Historical result.** This file preserves the July 24, 2026 v1.2.0 pilot for audit history. The corrected July 31 v1.3.0 result, which excludes forward P/E, is the current result in [`CORRECTED_PILOT_RESULTS.md`](./CORRECTED_PILOT_RESULTS.md).
+
 ## Executive result
 
 The prompt-v1.2.0 pilot is complete. It contains 72 unique `security × condition × repetition` assessment cells for AAPL, JNJ, JPM, KO, MU, and NEE.

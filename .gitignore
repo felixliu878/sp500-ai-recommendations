@@ -1,4 +1,6 @@
 .env
+.env.*
+!.env.example
 .venv/
 __pycache__/
 *.py[cod]
@@ -14,3 +16,22 @@ dist/
 data/raw/prices/yahoo_prototype/*/
 data/raw/research/
 outputs/pilot_*/
+outputs/full_*/
+official_runs/
+
+# Temporary authoring files, inspection dumps, and a separate nested Git project.
+/tmp/
+*.inspect.ndjson
+/presentation_summary_site/
+/outputs/professor_table_*/
+
+# Publish dated LaTeX reports; keep older generated drafts and meeting files local.
+/output/*
+!/output/pdf/
+/output/pdf/*
+!/output/pdf/Research_Progress_*/
+*.aux
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.xdv

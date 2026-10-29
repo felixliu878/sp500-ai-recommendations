@@ -1,20 +1,23 @@
 {
   "experiment_name": "sp500_ai_information_ablation",
-  "prompt_version": "v1.3.0",
-  "as_of_date": "2026-07-24",
+  "prompt_version": "v1.4.1",
+  "as_of_date": "2026-08-07",
   "horizon_months": 12,
   "benchmark_symbol": "SPY",
   "price_lookback_days": 730,
+  "price_history_frequency": "monthly",
+  "price_history_observations": 12,
   "data_provider": "yahoo",
   "yahoo_request_delay_seconds": 1.0,
   "execution_seed": 20260724,
   "max_output_tokens": 6000,
+  "web_max_tool_calls": 4,
   "consecutive_failure_limit": 3,
   "total_failure_limit": 6,
   "model": "gpt-5.4-2026-03-05",
   "reasoning_effort": "low",
   "pilot_repetitions": 3,
-  "full_repetitions": 1,
+  "full_repetitions": 3,
   "conditions": ["A_MEMORY_ONLY", "B_PRICE_HISTORY", "C_QUANTITATIVE", "D_CURRENT_WEB"],
   "pilot_symbols": ["MU", "AAPL", "JPM", "JNJ", "NEE", "KO"],
   "sector_etfs": {
@@ -30,8 +33,16 @@
     "Real Estate": "XLRE",
     "Utilities": "XLU"
   },
+  "sector_overrides": {
+    "FISV": {
+      "sector": "Financials",
+      "source": "https://www.ssga.com/library-content/products/fund-data/etfs/us/holdings-daily-us-en-xlf.xlsx",
+      "reason": "Yahoo sector metadata is missing; current State Street XLF holdings include FISV."
+    }
+  },
   "sources": {
     "spy_holdings": "https://www.ssga.com/library-content/products/fund-data/etfs/us/holdings-daily-us-en-spy.xlsx",
+    "xlf_holdings": "https://www.ssga.com/library-content/products/fund-data/etfs/us/holdings-daily-us-en-xlf.xlsx",
     "yahoo_chart": "https://query1.finance.yahoo.com/v8/finance/chart/{symbol}",
     "yahoo_fundamentals": "https://query1.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/{symbol}",
     "openai_structured_outputs": "https://developers.openai.com/api/docs/guides/structured-outputs",

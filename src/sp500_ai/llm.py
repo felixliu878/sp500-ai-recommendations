@@ -345,6 +345,7 @@ class OpenAIResponsesClient:
         model: str,
         reasoning_effort: str = "low",
         max_output_tokens: int = 3000,
+        web_max_tool_calls: int = 4,
     ):
         if not api_key:
             raise ValueError("OPENAI_API_KEY is required for the openai backend")
@@ -354,6 +355,12 @@ class OpenAIResponsesClient:
             or max_output_tokens < 1
         ):
             raise ValueError("max_output_tokens must be a positive integer")
+        if (
+            isinstance(web_max_tool_calls, bool)
+            or not isinstance(web_max_tool_calls, int)
+            or web_max_tool_calls < 1
+        ):
+            raise ValueError("web_max_tool_calls must be a positive integer")
         try:
             from openai import OpenAI
         except ImportError as exc:
@@ -362,6 +369,7 @@ class OpenAIResponsesClient:
         self.model = model
         self.reasoning_effort = reasoning_effort
         self.max_output_tokens = max_output_tokens
+        self.web_max_tool_calls = web_max_tool_calls
 
     def assess(
         self,
@@ -397,6 +405,7 @@ class OpenAIResponsesClient:
         if allow_web:
             kwargs["tools"] = [{"type": "web_search"}]
             kwargs["include"] = ["web_search_call.action.sources"]
+            kwargs["max_tool_calls"] = self.web_max_tool_calls
         response = self.client.responses.create(**kwargs)
         raw = response.model_dump(mode="json")
         usage = raw.get("usage") or {}

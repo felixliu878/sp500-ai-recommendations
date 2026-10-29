@@ -9,6 +9,7 @@ import pandas as pd
 
 from sp500_ai.config import ExperimentConfig
 from sp500_ai.pipeline import (
+    _analyst_benchmark_coverage,
     _analyst_exposure_audit,
     _cache_price,
     _cache_research,
@@ -53,6 +54,27 @@ def valid_research_result(cutoff: date) -> ResearchResult:
 
 
 class PipelineTests(unittest.TestCase):
+    def test_missing_analyst_baseline_is_reported_as_partial_coverage(self):
+        coverage = _analyst_benchmark_coverage(
+            [
+                {
+                    "symbol": "AAPL",
+                    "analyst_count_current_distribution": 10,
+                    "portal_rating_available": True,
+                },
+                {
+                    "symbol": "L",
+                    "analyst_count_current_distribution": 0,
+                    "portal_rating_available": False,
+                },
+            ]
+        )
+        self.assertEqual(coverage["status"], "PARTIAL")
+        self.assertEqual(coverage["analyst_distribution_available"], 1)
+        self.assertEqual(coverage["portal_rating_available"], 1)
+        self.assertEqual(coverage["security_count"], 2)
+        self.assertEqual(len(coverage["issues"]), 2)
+
     def test_operating_does_not_false_match_rating(self):
         payload = {
             "evidence": [{"claim": "Operating margin expanded.", "category": "FUNDAMENTALS"}],
@@ -188,7 +210,18 @@ class PipelineTests(unittest.TestCase):
             ("repetitions", {}, {"repetitions": 0}),
             ("horizon_months", {"horizon_months": 0}, {}),
             ("price_lookback_days", {"price_lookback_days": 0}, {}),
+            (
+                "price_history_frequency",
+                {"price_history_frequency": "weekly"},
+                {},
+            ),
+            (
+                "price_history_observations",
+                {"price_history_observations": 0},
+                {},
+            ),
             ("max_output_tokens", {"max_output_tokens": 0}, {}),
+            ("web_max_tool_calls", {"web_max_tool_calls": 0}, {}),
             (
                 "consecutive_failure_limit",
                 {"consecutive_failure_limit": 0},

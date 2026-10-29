@@ -1,7 +1,12 @@
+import io
 import unittest
 from datetime import date
+from unittest.mock import patch
+
+from openpyxl import Workbook
 
 from sp500_ai.providers import (
+    StateStreetUniverseProvider,
     YAHOO_FUNDAMENTAL_METRICS,
     _current_recommendation,
     _parse_fundamental_timeseries,
@@ -10,6 +15,48 @@ from sp500_ai.providers import (
 
 
 class ProviderTests(unittest.TestCase):
+    def test_state_street_universe_excludes_cash_and_contra_rows(self):
+        workbook = Workbook()
+        sheet = workbook.active
+        sheet.append(["SPDR S&P 500 ETF Trust"])
+        sheet.append([])
+        sheet.append(["As of", "As of 30-Jul-2026"])
+        sheet.append([])
+        sheet.append(
+            [
+                "Name",
+                "Ticker",
+                "Identifier",
+                "SEDOL",
+                "Weight",
+                "Sector",
+                "Shares Held",
+                "Local Currency",
+            ]
+        )
+        sheet.append(
+            [
+                "APPLE INC",
+                "AAPL",
+                "037833100",
+                "2046251",
+                7.0,
+                "Information Technology",
+                100,
+                "USD",
+            ]
+        )
+        sheet.append(["US DOLLAR", "-", "999USDZ92", "-", 0.04, None, 1000, "USD"])
+        sheet.append(["CONTRA RECEIVABLE", "ABC", "TEMP", "-", 0.01, None, 1, "USD"])
+        buffer = io.BytesIO()
+        workbook.save(buffer)
+
+        with patch("sp500_ai.providers._request_bytes", return_value=buffer.getvalue()):
+            frame, metadata, _ = StateStreetUniverseProvider("https://example.test").fetch()
+
+        self.assertEqual(frame["symbol"].tolist(), ["AAPL"])
+        self.assertEqual(metadata["security_count"], 1)
+
     def test_share_class_symbol_conversion(self):
         self.assertEqual(ticker_for_yahoo("BRK.B"), "BRK-B")
 

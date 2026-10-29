@@ -1,16 +1,10 @@
-# One-key API handoff and live-run record
+# API handoff and execution gates
 
-The current protocol requires one professor-provided credential:
+## Credential
 
-1. **OpenAI API key** with access to the Responses API, configured dated model snapshot, Structured Outputs, and web-search tool.
+The workflow requires one professor-provided credential: `OPENAI_API_KEY`, with access to the Responses API, the configured GPT-5.4 snapshot, Structured Outputs, and web search. State Street and the provisional Yahoo/yfinance integration do not require a finance API key.
 
-Yahoo market, fundamental, and analyst-benchmark data do not require a separate finance API key in this feasibility workflow.
-
-Store the OpenAI key only in the Git-ignored `.env` file:
-
-```bash
-cp .env.example .env
-```
+Store the key only in the Git-ignored `.env` file:
 
 ```text
 OPENAI_API_KEY=...
@@ -19,152 +13,101 @@ OPENAI_MODEL=gpt-5.4-2026-03-05
 
 Never commit `.env`, print the key, place it in a command line, or copy it into an output artifact.
 
-## Source-use boundary
+Yahoo/yfinance is an unofficial feasibility source, not a licensed production or historical point-in-time analyst feed. Confirm source permissions or obtain a licensed source before publication, redistribution, or commercial use.
 
-The Yahoo/yfinance integration is unofficial and appropriate only for a small academic or personal-use feasibility study. It is not a licensed production feed and does not provide historical point-in-time analyst snapshots. Before redistribution, commercial use, or a publication-quality full-universe study, confirm the applicable terms and whether a licensed data source is required.
+## Gate 0 — freeze the date
 
-## Gate 0 — freeze the current UTC date
+Yahoo analyst fields are current snapshots. Before refreshing data, set `config/experiment.json`'s `as_of_date` to the current UTC date. The cache is accepted only when the schema, metric-set hash, cutoff, UTC retrieval date, provider-error state, and fundamental coverage match the protocol.
 
-Yahoo analyst data are current-only. Before refreshing data, confirm the UTC date:
+## Gate 1 — model-input eligibility
 
-```bash
-date -u +%F
-```
+Every run writes `data_quality.csv`, `context_data_quality.csv`, and `acquisition_gate.json`. A paid run stops before model calls if any selected security has:
 
-Set `config/experiment.json`'s `as_of_date` to that value. A fresh Yahoo research fetch rejects any other cutoff date. Use `--refresh` for the canonical live run so every security is retrieved under the same dated protocol.
+- fewer than 253 price observations;
+- prices after the cutoff or more than seven days stale;
+- an unresolved GICS sector or missing sector-ETF mapping;
+- more than four missing requested fundamental metrics or fewer than eight packet fields;
+- a Yahoo research error or cutoff mismatch; or
+- invalid SPY or sector-ETF context data.
 
-The v1.3.0 provider cache is accepted only when all of the following match:
+Analyst-distribution and Yahoo portal-rating coverage are recorded separately. A missing analyst baseline does not invalidate an otherwise eligible AI assessment because analyst data are withheld from Conditions A–D; the row is excluded only from the unavailable analyst-comparison statistic.
 
-- `yahoo-research-v2` schema version; older v1 caches remain part of the immutable pilot only;
-- frozen fundamental metric-set SHA-256;
-- configured cutoff;
-- UTC retrieval date equal to the cutoff;
-- no cached provider errors;
-- no unavailable-data marker; and
-- no more than four missing requested fundamental metrics.
+## Corrected live pilot — complete
 
-## Gate 1 — acquisition quality before paid model calls
-
-Every run writes `data_quality.csv`, `context_data_quality.csv`, and `acquisition_gate.json`. Every OpenAI run, pilot or full universe, aborts before any model call when:
-
-- fewer than 253 price observations, which are required for a 252-session return;
-- a price observation after the cutoff;
-- price data lagging the cutoff by more than seven days;
-- SPY or a required sector ETF fails the same history and freshness checks;
-- a GICS sector cannot be resolved or mapped to one of the 11 sector ETFs;
-- more than four missing requested fundamental metrics;
-- fewer than eight compact fundamental packet fields;
-- any recorded Yahoo research error;
-- no current analyst rating distribution; or
-- no Yahoo portal rating.
-
-Do not proceed unless `acquisition_gate.json` reports `PASS`.
-
-## Gate 2 — four-call Micron smoke test
-
-```bash
-PYTHONPATH=src python -m sp500_ai.cli pilot \
-  --backend openai \
-  --symbols MU \
-  --repetitions 1 \
-  --refresh
-```
-
-Confirm:
-
-- four assessments were planned and completed with zero failures;
-- `backend=OPENAI_RESPONSES_API`;
-- A–C have `web_search_enabled=false`;
-- D has `web_search_enabled=true`;
-- every response passes the strict schema;
-- every response has exactly three thesis points and three risks;
-- evidence contains valid origin and date fields;
-- D has captured web-call/source audit fields;
-- both analyst baselines are present but absent from the model's supplied packet;
-- token-use fields are populated;
-- no supplied observation or cited publication is after the cutoff; and
-- the manifest does not report failure-threshold abortion.
-
-## Gate 3 — canonical v1.2.0 pilot: complete but exploratory
-
-The pilot used six cross-sector securities, four information conditions, and three separate API repetitions:
+The July 31, 2026 pilot used six stocks, four conditions, and three repetitions: 72 accepted cells. Forward P/E was excluded. The original run accepted 71 cells and rejected one Condition D response for post-cutoff evidence; an append-only retry reused the exact prompt and succeeded.
 
 ```text
-MU, AAPL, JPM, JNJ, NEE, KO
-6 securities × 4 conditions × 3 repetitions = 72 final cells
+outputs/pilot_2026-07-31_openai_20260731T132724294915Z/
+  retries/retry_20260731T135101452966Z/
 ```
 
-All 39 automated tests plus 32 subtests passed. The acquisition gate passed with no issues. The configured task order was shuffled with a frozen execution seed.
+Key results:
 
-The original run completed 70 cells and recorded two Condition D `JSONDecodeError` failures caused by truncated JSON. Two targeted retries reused the exact stored prompt hashes, increased `max_output_tokens` to 6,000, and both succeeded. The final consolidated directory has 72 completed cells, zero unresolved failures, and 74 total attempts. Original artifacts were not overwritten.
+- A: 0 BUY, 18 HOLD; mean confidence 26.39.
+- B: 0 BUY, 18 HOLD; mean confidence 39.22.
+- C: 14 BUY, 4 HOLD; mean confidence 65.22.
+- D: 12 BUY, 6 HOLD; mean confidence 63.22.
+- B→C changed 14 of 18 ratings; C→D changed 8 of 18.
+- Mean three-run modal agreement was 91.7%.
+- Every hard validation check passed; six residual primary-source URLs were manually verified.
+- The 72 accepted calls cost $4.95344. All 73 paid attempts, including the rejected call and retry, cost $5.16333.
 
-Canonical artifact:
-
-```text
-outputs/pilot_2026-07-24_openai_20260724T132933641207Z/
-  retries/retry_20260724T140656289007Z/
-```
-
-Key final facts:
-
-- 72 of 72 cells complete after 74 attempts;
-- 831,759 recorded tokens and 107 recorded web-search calls;
-- known API cost lower bound of $4.486485;
-- two failed original calls have unknown usage, so exact cost is unavailable;
-- 16 of 24 stock-condition groups were unanimous; mean modal agreement was 88.9%;
-- 532 evidence items passed the date audit with no invalid or post-cutoff dates; and
-- one D response reported encountering analyst opinions, none reported using them, and the captured web-action plus evidence/thesis/risk term audits detected no analyst terms.
-
-See [`LIVE_PILOT_RESULTS.md`](./LIVE_PILOT_RESULTS.md) and the canonical `pilot_summary.json` for the full rating, stability, analyst, evidence, and provenance tables. Do not combine dry-run records, smoke-test records, original failed cells, or earlier prompt versions with the canonical `v1.2.0` analysis.
-
-Post-pilot review found that v1.2.0 included Yahoo `forward_pe` in C and D. This can embed analyst forecast earnings. Direct rating baselines were withheld and the C/D comparison remains controlled, but the v1.2.0 disagreement markers do not prove zero analyst-derived influence.
-
-## Gate 3A — credential-free artifact validation
-
-Validate the accepted local directory without loading `.env`:
+Validate the accepted directory without loading credentials:
 
 ```bash
 PYTHONPATH=src python scripts/validate_pilot.py \
-  outputs/pilot_2026-07-24_openai_20260724T132933641207Z/retries/retry_20260724T140656289007Z \
-  --output outputs/pilot_2026-07-24_openai_20260724T132933641207Z/validation_report.json
+  outputs/pilot_2026-07-31_openai_20260731T132724294915Z/retries/retry_20260731T135101452966Z \
+  --output outputs/pilot_2026-07-31_openai_20260731T132724294915Z/validation_report.json
 ```
 
-The canonical result is `PASS_WITH_WARNINGS`. All 72 cells, exact prompts, raw successful responses, retry provenance, C/D packet identity, condition-level web isolation, and evidence dates pass validation. Two unique official PDF URLs remain in the manual trace-review queue, and the exact API cost remains unknown because failed-call usage was unavailable.
+The result is `PASS_WITH_WARNINGS`: all hard checks pass, while six official URLs require the documented manual trace review.
 
-## Gate 3B — corrected v1.3.0 pilot
+## Full-universe audit — complete
 
-The current code removes forward P/E, resolves all 11 sectors, enforces the gate for every paid run, validates response evidence before acceptance, and preserves returned failure payloads and usage when available.
-
-After source and pilot-budget approval, run the four-call smoke test and then:
-
-```bash
-PYTHONPATH=src python -m sp500_ai.cli pilot \
-  --backend openai \
-  --repetitions 3 \
-  --refresh
-```
-
-Keep v1.3.0 results separate from the immutable v1.2.0 pilot. Do not pool prompt versions.
-
-## Pricing record
-
-The cost estimate used the official [GPT-5.4 model pricing](https://developers.openai.com/api/docs/models/gpt-5.4) and [OpenAI API pricing](https://developers.openai.com/api/docs/pricing) visible for the run:
-
-- $2.50 per million input tokens;
-- $15.00 per million output tokens; and
-- $0.01 per web-search call.
-
-Known completed usage totals $4.486485. This is a lower bound because usage for the two original failed calls was not archived.
-
-## Gate 4 — full current universe
-
-The default Yahoo workflow uses the dated State Street SPY holdings snapshot as the actual full-run universe:
+Run the acquisition and prompt pipeline without paid model calls:
 
 ```bash
 PYTHONPATH=src python -m sp500_ai.cli full \
-  --backend openai \
+  --backend dry-run \
   --repetitions 1 \
   --refresh
 ```
 
-One repetition requires `actual constituent-security rows × 4` final cells. Three repetitions multiply that total by three. At 504 securities, a pilot-average extrapolation is roughly $126 for one repetition or $377 for three. These figures are not budget guarantees and exclude unknown original failure usage. Do not run the full universe until the corrected v1.3.0 pilot, Yahoo personal-use source boundary, budget, retry policy, and one-versus-three-repetition design have been approved.
+The official SPY holdings snapshot contains 503 securities after excluding a cash row. The dry audit found 499 model-ready securities:
+
+- HONA, Q, and FDXF have fewer than 253 observations;
+- PSKY has fewer than eight fundamental packet fields;
+- FISV's missing Yahoo sector was resolved as Financials with a documented current State Street XLF-holdings override; and
+- the 499-security eligible dry run passed the model-input gate and completed 1,996/1,996 assessments.
+
+In that July audit, the analyst-count baseline was available for 497 and the Yahoo portal baseline for 485. The frozen August full-run acquisition gate records coverage of 497 and 482, respectively; paired result comparisons also require an accepted D response.
+
+## Full-scale execution — closed with documented exclusions
+
+The approved and executed design was:
+
+```text
+499 securities × 4 conditions × 3 repetitions = 5,988 planned cells
+```
+
+The official implementation now uses OpenAI's Batch API rather than 5,988 sequential synchronous calls. The Batch API documents a 50% discount on input and output tokens. Condition D can still dominate usage because current web retrieval expands model input, and tool fees and retry behavior remain variable. The four-task smoke batch is therefore the cost and feature-compatibility check before scale-up.
+
+The engineering gates are complete:
+
+1. the exact 499-security universe, prompts, packets, model snapshot, schema, and 5,988 task IDs are frozen and hashed;
+2. the plan is divided into one four-task MU smoke shard and 12 condition-isolated full shards of at most 500 tasks;
+3. provider data and local artifacts use atomic writes and reuse valid same-cutoff caches after restart;
+4. uploads recover by unique filename and size, and Batch creation recovers by frozen metadata;
+5. output/error files are downloaded atomically, then reconciled by `custom_id` because Batch output order is not guaranteed;
+6. every task has an independent checkpoint and at most one exact-request retry; and
+7. the full phase is technically locked until explicit plan-matching approval and a passing smoke gate.
+
+The August run and a separate recovery pass were approved and executed. The archived run is `official_full_2026-08-07_20260807T151128219298Z`, with 5,956 accepted assessments and 32 validation exclusions after three attempts per affected task. The July 31 prepared plans are historical artifacts, not the current execution status.
+
+The original plan permitted two attempts. The recovery script requires a matching recovery-plan hash and approval before adding a third attempt with the original request settings. See [`FULL_SCALE_RESULTS.md`](./FULL_SCALE_RESULTS.md) for the final coverage, failure causes, and cost record. New data collection or paid execution requires a new same-day plan and its own approval.
+
+The detailed operating procedure is in [`OFFICIAL_FULL_RUN_FRAMEWORK.md`](./OFFICIAL_FULL_RUN_FRAMEWORK.md).
+
+## Pricing record
+
+The historical pilot calculation used $2.50 per million input tokens, $15 per million output tokens, and $0.01 per web-search call. The full run used the separately recorded Batch assumptions in [`cost_summary.json`](../outputs/official_summary/cost_summary.json), producing a $243.24 lower-bound estimate from downloaded usage. These are archived assumptions, not a statement of current API prices or a reconciled invoice.

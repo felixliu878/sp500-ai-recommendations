@@ -119,6 +119,16 @@ class LLMTests(unittest.TestCase):
                         max_output_tokens=value,
                     )
 
+    def test_openai_client_rejects_invalid_web_tool_limit_before_setup(self):
+        for value in (0, -1, True, 1.5):
+            with self.subTest(value=value):
+                with self.assertRaisesRegex(ValueError, "web_max_tool_calls"):
+                    OpenAIResponsesClient(
+                        "dummy-key",
+                        "test-model",
+                        web_max_tool_calls=value,
+                    )
+
     def test_openai_client_rejects_condition_tool_mismatch_before_call(self):
         client = object.__new__(OpenAIResponsesClient)
         with self.assertRaisesRegex(ValueError, "inconsistent"):

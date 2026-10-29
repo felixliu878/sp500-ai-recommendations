@@ -1,0 +1,31 @@
+{
+  "framework_version": "openai-batch-v1.0",
+  "transport": "openai_batch_api",
+  "endpoint": "/v1/responses",
+  "completion_window": "24h",
+  "repetitions": 3,
+  "shard_size": 500,
+  "max_active_batches": 12,
+  "max_attempts_per_task": 2,
+  "transfer_retry_limit": 5,
+  "retry_backoff_seconds": 2.0,
+  "poll_interval_seconds": 60,
+  "store_responses": false,
+  "require_smoke_batch": true,
+  "smoke_symbol": "MU",
+  "universe_policy": {
+    "exclude_model_ineligible_securities": true,
+    "retain_securities_with_missing_analyst_baselines": true,
+    "require_documented_sector_override": true
+  },
+  "approval_policy": {
+    "require_matching_plan_sha256": true,
+    "approval_filename": "FULL_RUN_APPROVAL.json",
+    "allow_automatic_exact_prompt_retry": true
+  },
+  "official_sources": {
+    "batch_api": "https://developers.openai.com/api/docs/guides/batch",
+    "responses_api": "https://developers.openai.com/api/reference/resources/responses",
+    "model": "https://developers.openai.com/api/docs/models/gpt-5.4"
+  }
+}

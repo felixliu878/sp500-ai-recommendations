@@ -1,0 +1,128 @@
+% Source: archived official_full_2026-08-07_20260807T151128219298Z run.
+% Metrics checked against analysis_final_attempt_limited/*.csv and row-level data.
+% This report summarizes archived results; it does not launch a new experiment.
+\documentclass[10pt,letterpaper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=0.7in,headheight=14pt,footskip=24pt]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{array,booktabs,tabularx}
+\usepackage{enumitem,titlesec,fancyhdr,microtype}
+\usepackage[hidelinks]{hyperref}
+\definecolor{navy}{HTML}{18364E}
+\definecolor{teal}{HTML}{197B82}
+\definecolor{pale}{HTML}{EDF5F7}
+\definecolor{ink}{HTML}{243342}
+\definecolor{muted}{HTML}{566675}
+\definecolor{rulegray}{HTML}{D6E1E7}
+\renewcommand{\familydefault}{\sfdefault}
+\color{ink}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.2}
+\linespread{1.035}
+\titleformat{\section}{\large\bfseries\color{navy}}{\thesection.}{0.5em}{}
+\titlespacing*{\section}{0pt}{11pt}{5pt}
+\setlist[enumerate]{leftmargin=17pt,itemsep=4pt,topsep=2pt,parsep=0pt}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize\color{muted}AI Stock Recommendation Study}
+\fancyhead[R]{\footnotesize\color{muted}Project Progress Report}
+\fancyfoot[L]{\footnotesize\color{muted}Julia Yang \;|\; Emory University, Goizueta Business School}
+\fancyfoot[R]{\footnotesize\color{muted}\thepage\ / 2}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancypagestyle{plain}{\fancyhf{}\renewcommand{\headrulewidth}{0pt}\fancyfoot[L]{\footnotesize\color{muted}Julia Yang \;|\; Emory University, Goizueta Business School}\fancyfoot[R]{\footnotesize\color{muted}\thepage\ / 2}}
+\hypersetup{pdftitle={AI Stock Recommendation Study - Project Progress Report},pdfauthor={Julia Yang},pdfsubject={Experimental design, completed work, preliminary results, and next steps}}
+
+\begin{document}
+\thispagestyle{plain}
+{\color{teal}\small RESEARCH UPDATE \hfill OCTOBER 28, 2026}\par
+\vspace{3pt}
+{\color{navy}\LARGE\bfseries AI Stock Recommendation Study}\par
+{\large Project Progress Report}\par
+{\small\color{muted}Julia Yang \;|\; Emory University, Goizueta Business School}\par
+{\small\color{muted}Progress reporting cutoff: October 28, 2026.}\par
+\vspace{5pt}
+
+\noindent\colorbox{pale}{\parbox{\dimexpr\linewidth-2\fboxsep\relax}{%
+\textbf{Summary of accomplishments}\\[3pt]
+I built and ran a reproducible system to test how additional information changes AI stock assessments. Across \textbf{499 securities, four conditions, and three repetitions}, the experiment produced \textbf{5,956 valid results from 5,988 planned assessments (99.47\%)}. Quantitative data substantially changed ratings; web search increased agreement with analysts but reduced repeatability. Investment performance remains to be evaluated.}}
+
+\section{Research objective and experimental design}
+The study tests how additional evidence changes AI stock recommendations, their repeatability, and their similarity to analyst ratings. Its eventual goal is a prospective comparison of an AI-selected portfolio with SPY.
+
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}p{1.14in}Y@{}}
+\toprule
+\rowcolor{pale} Condition & Information available to the model \\
+\midrule
+A: Identity & Company name, ticker, sector, cutoff date, and the common prediction task. \\
+B: Price history & A plus 12 monthly adjusted-close and trading-volume observations. \\
+C: Quantitative & B plus technical indicators, fundamentals, SPY data, and sector context. \\
+D: Current web & The identical C data packet plus web search. \\
+\bottomrule
+\end{tabularx}
+
+The model snapshot (\texttt{gpt-5.4-2026-03-05}), five-level rating scale, output schema, and \textbf{12-month SPY-relative decision task} are held constant. The task asks for expected risk-adjusted performance relative to SPY; it does not supply a future return or price target.
+
+The universe comes from a dated State Street SPY holdings file; Yahoo Finance supplies market, fundamental, and analyst data. Monthly prices use the \textbf{last available trading-day adjusted close}, rather than a monthly average; the latest month may be partial. Forward P/E and analyst ratings are withheld from the supplied model packets. D can still encounter analyst opinions through search, so exposure is recorded.
+
+\section{Work completed and execution status}
+I completed a six-stock pilot and a full-universe eligibility screen before the main experiment. The Python workflow supports data collection, standardized prompts, response validation, parallel Batch API execution, restart-safe transfers, checkpoints, retries, and progress/cost monitoring. I also prepared a simplified workbook with ratings, analyst comparisons, and failure records.
+
+\begin{tabularx}{\linewidth}{@{}p{0.70in}>{\raggedleft\arraybackslash}p{1.55in}RRR@{}}
+\toprule
+\rowcolor{pale} Condition & Accepted / planned & Buy & Hold & Sell / Strong Sell \\
+\midrule
+A & 1,497 / 1,497 & 0.00\% & 99.73\% & 0.27\% \\
+B & 1,497 / 1,497 & 0.73\% & 91.78\% & 7.48\% \\
+C & 1,497 / 1,497 & 14.90\% & 38.61\% & 46.49\% \\
+D & 1,465 / 1,497 & 19.04\% & 54.27\% & 26.69\% \\
+\bottomrule
+\end{tabularx}
+{\footnotesize\color{muted}Percentages use accepted assessments within each condition; no Strong Buy ratings occurred. Rounding may prevent totals of exactly 100\%. Sources: [1--2].}
+
+All 32 exclusions are in D: \textbf{30 failed evidence-date cutoff checks and two failed source-origin checks}, after three approved attempts per affected task. These rejected records remain visible rather than being converted into ratings. The archived usage estimate is \textbf{\$243.24}, a lower bound rather than a reconciled invoice; D accounts for approximately 83.5\% of that estimate. No new paid calls were made for this report.
+
+\newpage
+\section{Main findings and their interpretation}
+\textbf{Additional information materially changes ratings.} On matched stock/repetition pairs, ratings changed in 8.35\% of A-to-B comparisons, 56.05\% of B-to-C comparisons, and 39.86\% of C-to-D comparisons. The direct A-to-D change rate is \textbf{45.46\% (666/1,465)}. Adjacent change rates cannot be added because a rating may change more than once or return to its starting category.
+
+\textbf{Web access reduces repeatability.} Among the same 474 securities with all three D results accepted, C produced an identical rating in all three runs for \textbf{68.78\% (326/474)}, compared with \textbf{54.85\% (260/474)} for D. Thus, approximately 45\% of these securities had at least one different D rating across the three tests. This measures consistency, not the percentage of correct recommendations.
+
+\textbf{D is closer to analysts than C on matched observations.}\par
+\begin{tabularx}{\linewidth}{@{}Yrrr@{}}
+\toprule
+\rowcolor{pale} Analyst benchmark & Matched pairs & C agreement & D agreement \\
+\midrule
+Count-normalized analyst rating & 1,459 & 22.34\% & 29.61\% \\
+Yahoo portal rating & 1,417 & 18.49\% & 21.67\% \\
+\bottomrule
+\end{tabularx}
+{\footnotesize\color{muted}Each pair is the same stock and repetition in C and D, with the relevant benchmark available. Agreement means an exact five-category rating match. Sources: [2--3].}
+
+The count-normalized benchmark is calculated from Yahoo's analyst recommendation counts; the portal benchmark is Yahoo's displayed overall rating. They are kept separate. Greater agreement shows similarity to analysts, \textbf{not predictive accuracy or independent reasoning}. In D, 263/1,465 assessments (17.95\%) reported encountering analyst opinions; none reported using them. These disclosures and search audits cannot establish what influenced the model internally.
+
+\textbf{The identity-only baseline is information constrained.} All A assessments flagged insufficient evidence, and 99.73\% selected Hold. Its high repeatability therefore reflects a limited-information baseline and should not be interpreted as strong investment performance. Self-reported confidence is likewise not a calibrated probability of correctness.
+
+\section{Remaining limitations and next steps}
+The archived study has 32 missing D results across 25 securities; missingness may be systematic. Analyst targets also do not exactly match the AI's SPY-relative objective. Live web retrieval with date checks is not a fully historical, point-in-time archive, and the 12-month outcome window has not ended. These constraints limit causal claims about analyst influence and any claim of market outperformance.
+
+\begin{enumerate}
+\item \textbf{Finalize the analysis.} Preserve all failures, report paired denominators, compare common complete cohorts, and quantify uncertainty while treating repeated assessments of a stock as related observations. Audit rejected dates, including forecast-period endpoints, before considering any protocol change.
+\item \textbf{Confirm the comparison target with the professor.} Retain SPY-relative AI ratings and label analyst comparisons as descriptive, or authorize a separate absolute-return analysis that better matches analyst rating conventions.
+\item \textbf{Freeze a prospective portfolio protocol.} Agree on how the three ratings are combined, stock selection, weighting, missing-data handling, rebalancing, transaction costs, and a start date before measuring subsequent portfolio performance against SPY. Avoid choosing rules using returns already observed.
+\item \textbf{Evaluate realized outcomes.} Score the archived 12-month forecasts once their horizon ends in August 2027, and report the separately defined portfolio's returns, volatility, and drawdowns relative to SPY. No claim of predictive accuracy or outperformance is established yet.
+\end{enumerate}
+
+\vfill
+{\footnotesize\color{muted}
+\textbf{Evidence base.} Run: \texttt{official\_full\_2026-08-07\_20260807T151128219298Z}.\par
+[1] Frozen experiment configuration, task registry, and acquisition records.\par
+[2] \texttt{analysis\_final\_attempt\_limited}: accepted assessments, failure ledger, condition/transition/stability summaries, and recorded usage.\par
+[3] Paired C--D analyst summary; direct change and matched stability counts were independently checked against the row-level data.}
+\end{document}

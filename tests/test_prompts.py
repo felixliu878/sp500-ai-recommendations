@@ -35,6 +35,16 @@ class PromptTests(unittest.TestCase):
         for condition in ["A_MEMORY_ONLY", "B_PRICE_HISTORY", "C_QUANTITATIVE"]:
             self.assertNotIn("Web search is available", prompts[condition])
 
+    def test_date_and_price_origin_guardrails_are_explicit(self):
+        prompt_b = self.builder.build(
+            "B_PRICE_HISTORY", "Micron", "MU", "Information Technology", "2026-07-17", 12, self.packet("B_PRICE_HISTORY")
+        )
+        prompt_d = self.builder.build(
+            "D_CURRENT_WEB", "Micron", "MU", "Information Technology", "2026-07-17", 12, self.packet("D_CURRENT_WEB")
+        )
+        self.assertIn("future forecast endpoint is not an observation date", prompt_d)
+        self.assertIn("origin=SUPPLIED_PRICE, never SUPPLIED_TECHNICAL", prompt_b)
+
 
 if __name__ == "__main__":
     unittest.main()

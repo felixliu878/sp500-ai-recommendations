@@ -24,7 +24,7 @@ The label definitions, target, schema, model snapshot, prompt version, and evalu
 ## 4. Conditions
 
 1. **A_MEMORY_ONLY:** company identity and sector only. No supplied prices, fundamentals, consensus, or web tool.
-2. **B_PRICE_HISTORY:** A plus up to 24 monthly adjusted-price observations and monthly volume through each actual observation date. No calculated indicators, fundamentals, consensus, or web tool.
+2. **B_PRICE_HISTORY:** A plus 12 monthly adjusted-close observations and monthly volume through each actual observation date in the full run (up to 24 in the earlier corrected pilot). No calculated indicators, fundamentals, consensus, or web tool. Prices are the last included trading-day closes rather than monthly averages; the latest month may be partial.
 3. **C_QUANTITATIVE:** B plus locally calculated return, volatility, trend, RSI, MACD, drawdown, beta, SPY/sector-relative features, and a compact Yahoo fundamental packet. No analyst benchmark and no web tool.
 4. **D_CURRENT_WEB:** C plus OpenAI web search. Retrieved sources and web-search actions are recorded. Analyst opinions are not supplied by the researcher, but the model must disclose whether search exposed them and whether they influenced the classification.
 
@@ -39,6 +39,8 @@ This is an information-ablation experiment. Condition A is not a claim that the 
 
 The name “S&P 500” does not imply exactly 500 ticker rows. Multiple share classes and temporary fund-holding adjustments can affect the security count. The exact evaluated universe is archived.
 
+The July 31 snapshot contains 503 securities after excluding a cash row. The full dry gate found 499 model-ready securities. HONA, Q, and FDXF have fewer than 253 price observations; PSKY is below the minimum fundamental-coverage threshold. Within the eligible 499, the count-distribution analyst baseline is available for 497 and the Yahoo portal baseline for 485.
+
 ## 6. Data sources and permitted-use boundary
 
 State Street supplies the official SPY holdings workbook. Yahoo's chart interface supplies adjusted daily price history. Yahoo Finance interfaces and pinned `yfinance==1.5.2` supply current fundamentals, recommendation distributions, portal summary fields, and analyst price targets.
@@ -51,18 +53,16 @@ Yahoo analyst fields are current snapshots. A fresh Yahoo research fetch is perm
 
 The Yahoo research cache is valid only when its schema version, fundamental metric-set hash, configured cutoff, and UTC retrieval date match and it contains no provider errors or excessive missingness.
 
-Before any paid OpenAI model call, including pilot and full-universe scopes, the acquisition gate requires:
+Before any paid OpenAI model call, including pilot and full-universe scopes, the model-input acquisition gate requires:
 
 - at least 253 price observations, sufficient for a 252-session return;
 - no price after the cutoff;
 - no more than seven days between the latest price and cutoff;
 - no more than four missing requested fundamental metrics;
 - at least eight compact fundamental packet fields;
-- no research-provider errors;
-- a nonempty current analyst rating distribution; and
-- an available Yahoo portal rating.
+- no research-provider errors.
 
-The gate result and security-level measurements are saved in `acquisition_gate.json` and `data_quality.csv`. A live pilot aborts before OpenAI calls if the gate fails.
+Analyst-distribution and Yahoo portal-rating coverage are audited separately. Missing analyst data do not block an otherwise valid AI assessment because the baselines are never supplied to Conditions A–D; the assessment is excluded only from the unavailable comparison. The gate result, benchmark coverage, and security-level measurements are saved in `acquisition_gate.json` and `data_quality.csv`. A live run aborts before OpenAI calls if the model-input gate fails.
 
 ## 8. Market features and fundamental packet
 
@@ -189,63 +189,62 @@ Aggregate analyst ratings cannot establish whether the AI used the same reasonin
 
 ## 13. Execution sequence
 
-1. Run all 39 automated tests plus 32 subtests. **Complete.**
-2. Set the cutoff to the current UTC date. **Complete for the July 24 pilot.**
+1. Run all 52 automated tests plus 39 subtests. **Complete.**
+2. Set the cutoff to the current UTC date. **Complete for the July 31 corrected pilot.**
 3. Run the deterministic six-stock validation and inspect acquisition artifacts. **Complete.**
 4. Run one live MU assessment per condition. **Complete.**
 5. Inspect schema, dates, web sources, analyst fields, failures, and token footprint. **Complete.**
 6. Run the canonical 72-cell six-stock pilot under prompt version `v1.2.0`. **Complete after targeted repair of two truncated JSON cells.**
 7. Audit the design for analyst-derived inputs and full-run safety. **Complete; forward P/E and scale-up gate issues were found and corrected in v1.3.0.**
 8. Produce condition, analyst, stability, evidence, and cost summaries without mixing dry-run, smoke-test, failed, or earlier prompt-version records. **Complete.**
-9. Run a corrected v1.3.0 six-stock pilot without forward P/E. **Pending approval.**
-10. Run the full current universe only after the corrected pilot plus source, cost, and repetition approval. **Pending.**
+9. Run a corrected v1.3.0 six-stock pilot without forward P/E. **Complete: 72 accepted cells after one cutoff-safe retry.**
+10. Run the full current universe only after the corrected pilot, full data gate, and resumable-execution check. **Executed: 5,956 of 5,988 planned assessments accepted; 32 D tasks remain excluded after the approved recovery ceiling. See [FULL_SCALE_RESULTS.md](./FULL_SCALE_RESULTS.md).**
 
 The live pipeline aborts after three consecutive model-call failures or six total failures.
 
 ### Targeted retry rule
 
-The original canonical execution succeeded for 70 cells and produced two truncated JSON failures in Condition D. The retry process was append-only:
+The corrected canonical execution succeeded for 71 cells and rejected one Condition D response because it cited evidence after the frozen cutoff. The retry process was append-only:
 
-- only the two failed `symbol × condition × repetition` cells were selected;
-- each retry reused the exact archived prompt SHA-256;
-- retry `max_output_tokens` was raised from 4,000 to 6,000;
-- both retries succeeded;
+- only the failed `symbol × condition × repetition` cell was selected;
+- the retry reused the exact archived prompt and SHA-256;
+- the retry succeeded with cutoff-valid evidence;
 - original artifacts were not overwritten; and
 - the consolidated dataset records `ORIGINAL_SUCCESS` or `TARGETED_RETRY_SUCCESS` for every final row.
 
-This produced 72 final cells after 74 total API attempts. Usage from the two original failed calls was not archived, so cost remains a lower bound.
+This produced 72 accepted cells after 73 paid attempts. Usage was preserved for the rejected call, so recorded cost is complete under the stated rates.
 
 ## 14. Canonical pilot findings
 
 The accepted consolidated run is:
 
 ```text
-outputs/pilot_2026-07-24_openai_20260724T132933641207Z/
-  retries/retry_20260724T140656289007Z/
+outputs/pilot_2026-07-31_openai_20260731T132724294915Z/
+  retries/retry_20260731T135101452966Z/
 ```
 
 The rating distributions were:
 
-- A: 0 Buy, 18 Hold; mean confidence 27.39.
-- B: 1 Buy, 17 Hold; mean confidence 39.39.
-- C: 13 Buy, 5 Hold; mean confidence 66.00.
-- D: 12 Buy, 6 Hold; mean confidence 63.78.
+- A: 0 Buy, 18 Hold; mean confidence 26.39.
+- B: 0 Buy, 18 Hold; mean confidence 39.22.
+- C: 14 Buy, 4 Hold; mean confidence 65.22.
+- D: 12 Buy, 6 Hold; mean confidence 63.22.
 
-The C-to-D comparison flipped in 9 of 18 matched repetitions: five Buy-to-Hold and four Hold-to-Buy. Sixteen of 24 stock-condition groups were unanimous, and mean modal agreement was 88.9%.
+The B-to-C comparison changed 14 of 18 matched repetitions, all Hold-to-Buy. C-to-D changed 8 of 18: five Buy-to-Hold and three Hold-to-Buy. Eighteen of 24 stock-condition groups were unanimous, and mean modal agreement was 91.7%.
 
-Against the count-normalized analyst baseline, exact match was 72.2% in C and 66.7% in D. Against Yahoo's portal baseline, exact match was 66.7% in C and 50.0% in D. Under the recorded sufficient-evidence and no-direct-rating-exposure filter, C differed from the count baseline in 5 of 18 assessments and from the portal baseline in 6 of 18. D differed in 6 of 17 and 9 of 17, respectively.
+Against the count-normalized analyst baseline, exact match was 77.8% in C and 66.7% in D. Against Yahoo's portal baseline, exact match was 72.2% in C and 55.6% in D. A and B did not match either baseline.
 
-One D assessment reported encountering analyst opinions, none reported using them, and precise audits of captured web actions plus structured evidence, thesis, and risks detected no analyst terms. These findings are behavior consistent with additional judgment, not proof of independent internal reasoning.
+One D assessment reported encountering an analyst site and reported not using the opinion. A-C had no web calls, supplied analyst ratings, or detected analyst exposure. These findings are behavior consistent with additional judgment, not proof of independent internal reasoning.
 
-The evidence audit covered 532 items and found no invalid or post-cutoff dates. The 97 cited web-evidence items comprised 96 primary and one secondary item, covering 45 unique URLs across 11 domains. Eighty-five citation instances matched the captured source list exactly, four more matched after conservative URL normalization, and the remaining eight instances represented two unique official issuer PDF URLs that were manually reviewed.
+Every hard validation check passed after the targeted retry. Six primary-source URLs that did not match captured web-action URLs automatically were manually verified as on or before the cutoff and supportive of the cited claims.
 
-Recorded completed usage was 831,759 tokens plus 107 web-search calls. Using the official [GPT-5.4 model page](https://developers.openai.com/api/docs/models/gpt-5.4) and [OpenAI API pricing](https://developers.openai.com/api/docs/pricing), known cost is at least $4.486485. A 504-security extrapolation is roughly $126 for one repetition or $377 for three, but neither figure is a budget guarantee.
+The 72 accepted calls cost $4.95344. Including the recorded rejected call and its exact retry, all 73 paid attempts cost $5.16333 using the official [GPT-5.4 model page](https://developers.openai.com/api/docs/models/gpt-5.4) and [OpenAI API pricing](https://developers.openai.com/api/docs/pricing).
 
-The detailed result tables and limitations are in [`LIVE_PILOT_RESULTS.md`](./LIVE_PILOT_RESULTS.md).
+The detailed result tables and limitations are in [`CORRECTED_PILOT_RESULTS.md`](./CORRECTED_PILOT_RESULTS.md). [`LIVE_PILOT_RESULTS.md`](./LIVE_PILOT_RESULTS.md) preserves the earlier pilot for audit history.
 
 ### Post-pilot protocol correction
 
-The v1.2.0 packet included Yahoo `forward_pe`, which can embed analyst forecast earnings. Direct rating baselines were withheld, and C/D packet identity remains valid, but a strict analyst-independent interpretation is not defensible. Version 1.3.0 removes forward P/E, requires all 11 GICS sector mappings, resolves full-universe sectors from Yahoo metadata, enforces the acquisition gate for every OpenAI run, rejects nonpositive run sizes, validates cutoff and evidence-origin semantics before accepting a response, preserves returned raw failure payloads and usage when available, and disables the non-cutoff-safe FMP execution path.
+The earlier v1.2.0 packet included Yahoo `forward_pe`, which can embed analyst forecast earnings. Version 1.3.0 removes forward P/E, requires all 11 GICS sector mappings, supports a documented State Street sector override when Yahoo metadata are absent, separates model-input eligibility from analyst-benchmark coverage, enforces the model-input gate for every OpenAI run, validates cutoff and evidence-origin semantics before accepting a response, and preserves raw failure payloads and usage when available.
 
 ## 15. Portfolio follow-up
 
@@ -267,4 +266,7 @@ The professor should approve:
 1. the four-condition protocol and two-baseline comparison;
 2. Yahoo/yfinance as a provisional feasibility source or a replacement licensed source;
 3. a full-universe budget that includes retry and price-change headroom; and
-4. one versus three repetitions for the full-universe run.
+4. treatment of the four securities that fail current model-data thresholds and of missing analyst baselines; and
+5. whether to retain the AI's SPY-relative target against mainly absolute portal ratings or add a matched absolute-return AI target.
+
+The professor has approved three repetitions and indicated that cost is not a constraint, subject to explaining prompt content and the unusually high web-search token usage.

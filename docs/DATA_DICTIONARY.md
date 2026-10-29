@@ -79,7 +79,7 @@ Yahoo/yfinance data are unofficial current snapshots for small academic or perso
 | `model` | string/null | Model identifier returned by the live API |
 | `requested_model` | string/null | Model identifier requested by configuration |
 | `response_id` | string/null | OpenAI response identifier |
-| `prompt_version` | string | `v1.2.0` for the completed pilot; the hardened next-run protocol is `v1.3.0` |
+| `prompt_version` | string | `v1.4.0` for the archived full run; `v1.4.1` for next-run templates; `v1.3.0` for the corrected July pilot; `v1.2.0` is historical |
 | `prompt_sha256` | string | SHA-256 of the exact rendered prompt |
 | `packet_sha256` | string | SHA-256 of the condition data packet |
 
@@ -197,7 +197,7 @@ A true disagreement marker means the AI differs from a direct analyst-rating bas
 | `research_data_cutoff` | date/null | Cutoff recorded by the research provider |
 | `sector`, `sector_source`, `sector_etf` | string/null | Resolved GICS sector, its source, and the configured sector benchmark |
 | `sector_resolved`, `sector_etf_available` | boolean | Full-universe sector completeness checks |
-| `analyst_count_current_distribution` | integer | Current recommendation-distribution count used by the quality gate |
+| `analyst_count_current_distribution` | integer | Current recommendation-distribution count used for analyst-benchmark coverage, not model-input eligibility |
 | `portal_rating_available` | boolean | Whether the separate Yahoo portal baseline is present |
 
 For every OpenAI run, the acquisition gate fails on fewer than 253 prices, future prices, more than seven days of lag, unresolved sectors or ETF mappings, stale or incomplete SPY/sector context, excessive missing fundamentals, fewer than eight fundamental fields, any research error, an empty current distribution, or a missing portal rating.
