@@ -1,0 +1,251 @@
+{
+  "as_of_date": "2026-08-07",
+  "bootstrap": {
+    "method": "Percentile intervals; whole securities resampled with replacement",
+    "resamples": 10000,
+    "seed": 20261029
+  },
+  "failure_audit": {
+    "attempts_without_structured_output": 11,
+    "excluded_securities": 25,
+    "excluded_tasks": 32,
+    "excluded_tasks_by_repetition": {
+      "1": 14,
+      "2": 10,
+      "3": 8
+    },
+    "final_failure_cause": {
+      "FUTURE_OBSERVATION_DATE": 30,
+      "INVALID_SOURCE_URL_ORIGIN": 2
+    },
+    "note": "Classes are rule-based from evidence fields and claim text. Publication dates are model-reported; the audit checks that the cited URL was returned by the web tool, not the page's contents.",
+    "offending_items_by_class_all_attempts": {
+      "FORECAST_OR_GUIDANCE_PERIOD_END": 89,
+      "POST_CUTOFF_OBSERVATION_NEEDS_REVIEW": 4,
+      "PRE_ANNOUNCED_EVENT_OR_POLICY_DATE": 7,
+      "URL_ON_NON_WEB_ORIGIN": 5
+    },
+    "offending_items_reviewed": 105,
+    "offending_publication_date_range": [
+      "2026-01-28",
+      "2026-08-06"
+    ],
+    "offending_urls_cited": 105,
+    "offending_urls_returned_by_web_tool": 89,
+    "response_created_at_utc_range": [
+      "2026-08-07T15:18:16+00:00",
+      "2026-08-14T16:40:00+00:00"
+    ],
+    "tasks_passing_alternative_date_rule": 31,
+    "tasks_same_rejection_type_every_structured_attempt": 31,
+    "tasks_with_any_post_cutoff_publication": 0
+  },
+  "headline_intervals": {
+    "analyst_exact_match_count_normalized_C_matched_c_d": {
+      "ci95_high": 25.753,
+      "ci95_low": 19.12,
+      "estimate": 22.344,
+      "units": 1459
+    },
+    "analyst_exact_match_count_normalized_D_matched_c_d": {
+      "ci95_high": 32.969,
+      "ci95_low": 26.337,
+      "estimate": 29.609,
+      "units": 1459
+    },
+    "analyst_exact_match_count_normalized_D_minus_C_matched_c_d": {
+      "ci95_high": 10.212,
+      "ci95_low": 4.422,
+      "estimate": 7.265,
+      "units": 1459
+    },
+    "analyst_exact_match_portal_yahoo_C_matched_c_d": {
+      "ci95_high": 21.683,
+      "ci95_low": 15.406,
+      "estimate": 18.49,
+      "units": 1417
+    },
+    "analyst_exact_match_portal_yahoo_D_matched_c_d": {
+      "ci95_high": 24.895,
+      "ci95_low": 18.582,
+      "estimate": 21.665,
+      "units": 1417
+    },
+    "analyst_exact_match_portal_yahoo_D_minus_C_matched_c_d": {
+      "ci95_high": 5.754,
+      "ci95_low": 0.63,
+      "estimate": 3.176,
+      "units": 1417
+    },
+    "d_reported_analyst_opinions_encountered": {
+      "ci95_high": 20.245,
+      "ci95_low": 15.746,
+      "estimate": 17.952,
+      "units": 1465
+    },
+    "exact_three_run_unanimity_A_matched_complete_d_cohort": {
+      "ci95_high": 100.0,
+      "ci95_low": 98.941,
+      "estimate": 99.578,
+      "units": 474
+    },
+    "exact_three_run_unanimity_B_matched_complete_d_cohort": {
+      "ci95_high": 91.597,
+      "ci95_low": 85.895,
+      "estimate": 88.819,
+      "units": 474
+    },
+    "exact_three_run_unanimity_C_matched_complete_d_cohort": {
+      "ci95_high": 72.824,
+      "ci95_low": 64.606,
+      "estimate": 68.776,
+      "units": 474
+    },
+    "exact_three_run_unanimity_D_matched_complete_d_cohort": {
+      "ci95_high": 59.197,
+      "ci95_low": 50.422,
+      "estimate": 54.852,
+      "units": 474
+    },
+    "exact_three_run_unanimity_D_minus_C_matched_complete_d_cohort": {
+      "ci95_high": -8.0,
+      "ci95_low": -19.915,
+      "estimate": -13.924,
+      "units": 474
+    },
+    "mean_ordinal_change_A_to_B": {
+      "ci95_high": -0.045,
+      "ci95_low": -0.086,
+      "estimate": -0.065,
+      "units": 1497
+    },
+    "mean_ordinal_change_A_to_D": {
+      "ci95_high": -0.022,
+      "ci95_low": -0.126,
+      "estimate": -0.074,
+      "units": 1465
+    },
+    "mean_ordinal_change_B_to_C": {
+      "ci95_high": -0.194,
+      "ci95_low": -0.305,
+      "estimate": -0.251,
+      "units": 1497
+    },
+    "mean_ordinal_change_C_to_D": {
+      "ci95_high": 0.281,
+      "ci95_low": 0.196,
+      "estimate": 0.238,
+      "units": 1465
+    },
+    "rating_change_A_to_B": {
+      "ci95_high": 10.421,
+      "ci95_low": 6.413,
+      "estimate": 8.35,
+      "units": 1497
+    },
+    "rating_change_A_to_C": {
+      "ci95_high": 64.663,
+      "ci95_low": 57.515,
+      "estimate": 61.122,
+      "units": 1497
+    },
+    "rating_change_A_to_D": {
+      "ci95_high": 48.802,
+      "ci95_low": 42.004,
+      "estimate": 45.461,
+      "units": 1465
+    },
+    "rating_change_B_to_C": {
+      "ci95_high": 59.519,
+      "ci95_low": 52.505,
+      "estimate": 56.045,
+      "units": 1497
+    },
+    "rating_change_B_to_D": {
+      "ci95_high": 46.027,
+      "ci95_low": 39.402,
+      "estimate": 42.662,
+      "units": 1465
+    },
+    "rating_change_C_to_D": {
+      "ci95_high": 42.916,
+      "ci95_low": 36.796,
+      "estimate": 39.863,
+      "units": 1465
+    }
+  },
+  "interpretation_guardrails": [
+    "The primary dataset and its frozen validation rule are unchanged; sensitivity rows are not accepted results.",
+    "Bootstrap intervals reflect security-level sampling variation, not model-version or data-source uncertainty.",
+    "Analyst agreement measures similarity, not accuracy; stability measures consistency, not correctness.",
+    "Model-reported publication dates were not independently verified against archived page contents."
+  ],
+  "reconciliation_all_checks_passed": true,
+  "run_id": "official_full_2026-08-07_20260807T151128219298Z",
+  "sensitivity_variants": {
+    "PRIMARY_FROZEN_RULE": {
+      "added_d_rows": 0,
+      "analyst_exact_match_count_normalized_C_pct": 22.344,
+      "analyst_exact_match_count_normalized_D_pct": 29.609,
+      "analyst_exact_match_count_normalized_pairs": 1459,
+      "analyst_exact_match_portal_yahoo_C_pct": 18.49,
+      "analyst_exact_match_portal_yahoo_D_pct": 21.665,
+      "analyst_exact_match_portal_yahoo_pairs": 1417,
+      "complete_d_securities": 474,
+      "d_accepted": 1465,
+      "d_hold_pct": 54.266,
+      "d_mean_rating_score": -0.076,
+      "d_reported_analyst_opinions_encountered_pct": 17.952,
+      "exact_three_run_unanimity_C_pct": 68.776,
+      "exact_three_run_unanimity_D_pct": 54.852,
+      "rating_change_A_to_D_pairs": 1465,
+      "rating_change_A_to_D_pct": 45.461,
+      "rating_change_C_to_D_pairs": 1465,
+      "rating_change_C_to_D_pct": 39.863,
+      "replaced_d_rows": 0
+    },
+    "SENSITIVITY_FILL_EXCLUDED_ONLY": {
+      "added_d_rows": 31,
+      "analyst_exact_match_count_normalized_C_pct": 22.215,
+      "analyst_exact_match_count_normalized_D_pct": 29.53,
+      "analyst_exact_match_count_normalized_pairs": 1490,
+      "analyst_exact_match_portal_yahoo_C_pct": 18.339,
+      "analyst_exact_match_portal_yahoo_D_pct": 21.522,
+      "analyst_exact_match_portal_yahoo_pairs": 1445,
+      "complete_d_securities": 498,
+      "d_accepted": 1496,
+      "d_hold_pct": 54.545,
+      "d_mean_rating_score": -0.08,
+      "d_reported_analyst_opinions_encountered_pct": 17.914,
+      "exact_three_run_unanimity_C_pct": 68.273,
+      "exact_three_run_unanimity_D_pct": 54.217,
+      "rating_change_A_to_D_pairs": 1496,
+      "rating_change_A_to_D_pct": 45.187,
+      "rating_change_C_to_D_pairs": 1496,
+      "rating_change_C_to_D_pct": 40.04,
+      "replaced_d_rows": 0
+    },
+    "SENSITIVITY_RESELECT_ALL_D_ATTEMPTS": {
+      "added_d_rows": 31,
+      "analyst_exact_match_count_normalized_C_pct": 22.215,
+      "analyst_exact_match_count_normalized_D_pct": 29.195,
+      "analyst_exact_match_count_normalized_pairs": 1490,
+      "analyst_exact_match_portal_yahoo_C_pct": 18.339,
+      "analyst_exact_match_portal_yahoo_D_pct": 21.384,
+      "analyst_exact_match_portal_yahoo_pairs": 1445,
+      "complete_d_securities": 498,
+      "d_accepted": 1496,
+      "d_hold_pct": 54.88,
+      "d_mean_rating_score": -0.082,
+      "d_reported_analyst_opinions_encountered_pct": 18.249,
+      "exact_three_run_unanimity_C_pct": 68.273,
+      "exact_three_run_unanimity_D_pct": 54.217,
+      "rating_change_A_to_D_pairs": 1496,
+      "rating_change_A_to_D_pct": 44.853,
+      "rating_change_C_to_D_pairs": 1496,
+      "rating_change_C_to_D_pct": 40.441,
+      "replaced_d_rows": 113
+    }
+  },
+  "source_analysis": "analysis_final_attempt_limited"
+}

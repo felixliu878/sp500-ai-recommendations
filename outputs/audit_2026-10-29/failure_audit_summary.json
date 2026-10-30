@@ -1,0 +1,35 @@
+{
+  "attempts_without_structured_output": 11,
+  "excluded_securities": 25,
+  "excluded_tasks": 32,
+  "excluded_tasks_by_repetition": {
+    "1": 14,
+    "2": 10,
+    "3": 8
+  },
+  "final_failure_cause": {
+    "FUTURE_OBSERVATION_DATE": 30,
+    "INVALID_SOURCE_URL_ORIGIN": 2
+  },
+  "note": "Classes are rule-based from evidence fields and claim text. Publication dates are model-reported; the audit checks that the cited URL was returned by the web tool, not the page's contents.",
+  "offending_items_by_class_all_attempts": {
+    "FORECAST_OR_GUIDANCE_PERIOD_END": 89,
+    "POST_CUTOFF_OBSERVATION_NEEDS_REVIEW": 4,
+    "PRE_ANNOUNCED_EVENT_OR_POLICY_DATE": 7,
+    "URL_ON_NON_WEB_ORIGIN": 5
+  },
+  "offending_items_reviewed": 105,
+  "offending_publication_date_range": [
+    "2026-01-28",
+    "2026-08-06"
+  ],
+  "offending_urls_cited": 105,
+  "offending_urls_returned_by_web_tool": 89,
+  "response_created_at_utc_range": [
+    "2026-08-07T15:18:16+00:00",
+    "2026-08-14T16:40:00+00:00"
+  ],
+  "tasks_passing_alternative_date_rule": 31,
+  "tasks_same_rejection_type_every_structured_attempt": 31,
+  "tasks_with_any_post_cutoff_publication": 0
+}
