@@ -1,0 +1,209 @@
+{
+  "accepted_attempt_distribution": {
+    "1": 5772,
+    "2": 134,
+    "3": 50
+  },
+  "accepted_by_condition": {
+    "A_MEMORY_ONLY": 1497,
+    "B_PRICE_HISTORY": 1497,
+    "C_QUANTITATIVE": 1497,
+    "D_CURRENT_WEB": 1465
+  },
+  "all_checks_passed": true,
+  "checks": [
+    {
+      "check": "task_registry_sha256",
+      "expected": "83ba53cd0f239db13149f2b844d8f7cf13c0f7732fc935aefcf45210e5c2302c",
+      "observed": "83ba53cd0f239db13149f2b844d8f7cf13c0f7732fc935aefcf45210e5c2302c",
+      "passed": true
+    },
+    {
+      "check": "state_plan_sha256",
+      "expected": "51411402cf97ececc2e6fafcfcd834b8ba73578148e2920e2b529438f8953c2b",
+      "observed": "51411402cf97ececc2e6fafcfcd834b8ba73578148e2920e2b529438f8953c2b",
+      "passed": true
+    },
+    {
+      "check": "registry_rows",
+      "expected": 5988,
+      "observed": 5988,
+      "passed": true
+    },
+    {
+      "check": "registry_unique_task_ids",
+      "expected": 5988,
+      "observed": 5988,
+      "passed": true
+    },
+    {
+      "check": "registry_unique_security_condition_repetition_cells",
+      "expected": 5988,
+      "observed": 5988,
+      "passed": true
+    },
+    {
+      "check": "registry_securities",
+      "expected": 499,
+      "observed": 499,
+      "passed": true
+    },
+    {
+      "check": "registry_tasks_per_condition",
+      "expected": {
+        "A_MEMORY_ONLY": 1497,
+        "B_PRICE_HISTORY": 1497,
+        "C_QUANTITATIVE": 1497,
+        "D_CURRENT_WEB": 1497
+      },
+      "observed": {
+        "A_MEMORY_ONLY": 1497,
+        "B_PRICE_HISTORY": 1497,
+        "C_QUANTITATIVE": 1497,
+        "D_CURRENT_WEB": 1497
+      },
+      "passed": true
+    },
+    {
+      "check": "d_packet_identical_to_c_packet",
+      "expected": 1497,
+      "observed": 1497,
+      "passed": true
+    },
+    {
+      "check": "state_task_ids_match_registry",
+      "expected": true,
+      "observed": true,
+      "passed": true
+    },
+    {
+      "check": "state_tasks_accepted_or_failed",
+      "expected": 5988,
+      "observed": 5988,
+      "passed": true
+    },
+    {
+      "check": "checkpoint_files",
+      "expected": 6286,
+      "observed": 6286,
+      "passed": true
+    },
+    {
+      "check": "checkpoint_integrity_problems",
+      "expected": {},
+      "observed": {},
+      "passed": true
+    },
+    {
+      "check": "validator_replay_accepted_now_rejected",
+      "expected": 0,
+      "observed": 0,
+      "passed": true
+    },
+    {
+      "check": "validator_replay_rejection_not_reproduced",
+      "expected": 0,
+      "observed": 0,
+      "passed": true
+    },
+    {
+      "check": "accepted_csv_rows",
+      "expected": 5956,
+      "observed": 5956,
+      "passed": true
+    },
+    {
+      "check": "accepted_csv_unique_task_ids",
+      "expected": 5956,
+      "observed": 5956,
+      "passed": true
+    },
+    {
+      "check": "accepted_csv_task_ids_match_state",
+      "expected": true,
+      "observed": true,
+      "passed": true
+    },
+    {
+      "check": "accepted_csv_identity_matches_registry",
+      "expected": 0,
+      "observed": 0,
+      "passed": true
+    },
+    {
+      "check": "failure_summary_task_ids_match_state",
+      "expected": true,
+      "observed": true,
+      "passed": true
+    },
+    {
+      "check": "regenerated_analysis_byte_identical_files",
+      "expected": 10,
+      "observed": 10,
+      "passed": true
+    }
+  ],
+  "effective_max_attempts_per_task": 3,
+  "failed_securities": 25,
+  "failed_tasks": 32,
+  "plan_sha256": "51411402cf97ececc2e6fafcfcd834b8ba73578148e2920e2b529438f8953c2b",
+  "regenerated_analysis_comparison": [
+    {
+      "byte_identical": true,
+      "file": "accepted_assessments.csv",
+      "present": true
+    },
+    {
+      "byte_identical": true,
+      "file": "adjacent_condition_transitions.csv",
+      "present": true
+    },
+    {
+      "byte_identical": true,
+      "file": "analysis_summary.json",
+      "present": true
+    },
+    {
+      "byte_identical": true,
+      "file": "analyst_comparison_summary.csv",
+      "present": true
+    },
+    {
+      "byte_identical": true,
+      "file": "condition_summary.csv",
+      "present": true
+    },
+    {
+      "byte_identical": true,
+      "file": "cost_summary.json",
+      "present": true
+    },
+    {
+      "byte_identical": true,
+      "file": "failure_summary.csv",
+      "present": true
+    },
+    {
+      "byte_identical": true,
+      "file": "matched_stability_summary.csv",
+      "present": true
+    },
+    {
+      "byte_identical": true,
+      "file": "paired_c_d_analyst_summary.csv",
+      "present": true
+    },
+    {
+      "byte_identical": true,
+      "file": "stability_summary.csv",
+      "present": true
+    }
+  ],
+  "run_id": "official_full_2026-08-07_20260807T151128219298Z",
+  "validator_replay": {
+    "accepted_reproduced": 5956,
+    "no_output_text": 74,
+    "rejection_reproduced": 246,
+    "unparseable_output_text": 10
+  }
+}

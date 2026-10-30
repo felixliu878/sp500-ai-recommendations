@@ -1,0 +1,15 @@
+{
+  "accepted_d_rows": 1465,
+  "accepted_d_rows_with_web_management_guidance_item": 629,
+  "accepted_d_rows_with_web_management_guidance_item_pct": 42.93515358361775,
+  "affected_securities_accepted_d_rows": 43,
+  "affected_securities_accepted_d_rows_with_guidance_item": 24,
+  "note": "Category MANAGEMENT_GUIDANCE only; guidance cited under other categories is not counted. Accepted rows cite guidance too, so exclusion depended on how the endpoint was dated.",
+  "observation_date_relation": {
+    "observation_date_after_publication_date_not_after_cutoff": 28,
+    "observation_date_before_publication_date": 80,
+    "observation_date_equals_publication_date": 472,
+    "observation_date_null": 103
+  },
+  "web_management_guidance_items": 683
+}
